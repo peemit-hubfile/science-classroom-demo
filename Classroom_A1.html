@@ -1,0 +1,1261 @@
+<!DOCTYPE html>
+
+<html lang="th">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Smart Science Classroom - ระบบสุริยะ</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&amp;display=swap"
+        rel="stylesheet" />
+    <style>
+        * {
+            font-family: 'Prompt', sans-serif;
+        }
+
+        /* School color scheme */
+        :root {
+            --primary: #1e40af;
+            /* Deep blue */
+            --secondary: #be123c;
+            /* Deep red */
+            --accent: #ca8a04;
+            /* Gold */
+            --light: #f8fafc;
+            /* Light background */
+            --dark: #1e293b;
+            /* Dark text */
+        }
+
+        body {
+            background-color: #f1f5f9;
+        }
+
+        /* Button animations */
+        .btn {
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s ease;
+            transform: translateZ(0);
+        }
+
+        .btn:before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.2);
+            transition: all 0.4s ease-in-out;
+            z-index: 1;
+        }
+
+        .btn:hover:before {
+            left: 100%;
+        }
+
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .btn:active {
+            transform: translateY(-1px);
+            box-shadow: 0 5px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .btn-content {
+            position: relative;
+            z-index: 2;
+        }
+
+        /* Card animations */
+        .card {
+            transition: all 0.3s ease;
+            transform: translateZ(0);
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Mobile menu animation */
+        .mobile-menu {
+            transition: transform 0.3s ease-in-out;
+            transform: translateX(-100%);
+        }
+
+        .mobile-menu.open {
+            transform: translateX(0);
+        }
+
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #f1f5f9;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #94a3b8;
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #64748b;
+        }
+
+        /* Earth rotation animation */
+        @keyframes rotate {
+            from {
+                transform: rotate(0deg);
+            }
+
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        .earth-rotate {
+            animation: rotate 20s linear infinite;
+        }
+
+        .earth-rotate-paused {
+            animation-play-state: paused;
+        }
+
+        /* Sun glow animation */
+        @keyframes glow {
+            0% {
+                box-shadow: 0 0 10px 2px rgba(255, 214, 0, 0.7);
+            }
+
+            50% {
+                box-shadow: 0 0 20px 5px rgba(255, 214, 0, 0.9);
+            }
+
+            100% {
+                box-shadow: 0 0 10px 2px rgba(255, 214, 0, 0.7);
+            }
+        }
+
+        .sun-glow {
+            animation: glow 3s ease-in-out infinite;
+        }
+
+        /* Thailand marker pulse animation */
+        @keyframes pulse {
+            0% {
+                transform: scale(1);
+                opacity: 1;
+            }
+
+            50% {
+                transform: scale(1.5);
+                opacity: 0.7;
+            }
+
+            100% {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        .thailand-pulse {
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        /* Moon phase animation */
+        @keyframes moonFade {
+            0% {
+                opacity: 0.3;
+            }
+
+            50% {
+                opacity: 1;
+            }
+
+            100% {
+                opacity: 0.3;
+            }
+        }
+
+        .moon-fade {
+            animation: moonFade 2s ease-in-out infinite;
+        }
+
+        /* Tab animation */
+        .tab-slide {
+            transition: all 0.3s ease;
+        }
+
+        .tab-indicator {
+            transition: transform 0.3s ease;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Mobile Menu (hidden by default) -->
+    <div class="mobile-menu fixed top-0 left-0 h-full w-64 bg-blue-900 z-50 shadow-lg" id="mobileMenu">
+        <div class="p-4">
+            <div class="flex justify-between items-center mb-6">
+                <h2 class="text-white text-xl font-bold">เมนู</h2>
+                <button class="text-white" id="closeMenu">
+                    <svg class="h-6 w-6" fill="none" stroke="currentColor" viewbox="0 0 24 24"
+                        xmlns="http://www.w3.org/2000/svg">
+                        <path d="M6 18L18 6M6 6l12 12" stroke-linecap="round" stroke-linejoin="round" stroke-width="2">
+                        </path>
+                    </svg>
+                </button>
+            </div>
+            <nav>
+                <ul class="space-y-2">
+                    <li>
+                        <a class="block py-2 px-4 text-white hover:bg-blue-800 rounded" href="index.html">หน้าหลัก</a>
+                    </li>
+                    <li>
+                        <a class="block py-2 px-4 text-white hover:bg-blue-800 rounded"
+                            href="Classroom-ChackIn.html">เช็กชื่อเข้าเรียน</a>
+                    </li>
+                    <li>
+                        <a class="block py-2 px-4 text-white hover:bg-blue-800 rounded"
+                            href="Classroom_A1.html">บทเรียนและการทดลอง</a>
+                    </li>
+                    <li>
+                        <a class="block py-2 px-4 text-white hover:bg-blue-800 rounded"
+                            href="Dashboard.html">แดชบอร์ดครู</a>
+                    </li>
+                    <li>
+                        <a class="block py-2 px-4 text-white hover:bg-blue-800 rounded" href="#">เกี่ยวกับเรา</a>
+                    </li>
+                    <li>
+                        <a class="block py-2 px-4 text-white hover:bg-blue-800 rounded" href="#">ติดต่อ</a>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+    </div>
+    <!-- Overlay for mobile menu -->
+    <div class="fixed inset-0 bg-black opacity-50 z-40 hidden" id="overlay"></div>
+    <!-- Main Container -->
+    <div class="min-h-screen flex flex-col">
+        <!-- Header -->
+        <header class="bg-blue-900 text-white shadow-md">
+            <div class="container mx-auto px-4">
+                <div class="flex justify-between items-center py-4">
+                    <!-- Logo and Title -->
+                    <div class="flex items-center">
+                        <button class="mr-4 md:hidden" id="menuButton">
+                            <svg class="h-6 w-6" fill="none" stroke="currentColor" viewbox="0 0 24 24"
+                                xmlns="http://www.w3.org/2000/svg">
+                                <path d="M4 6h16M4 12h16M4 18h16" stroke-linecap="round" stroke-linejoin="round"
+                                    stroke-width="2"></path>
+                            </svg>
+                        </button>
+                        <div class="flex items-center">
+                            <svg class="h-8 w-8 mr-2" fill="currentColor" viewbox="0 0 20 20"
+                                xmlns="http://www.w3.org/2000/svg">
+                                <path
+                                    d="M10.394 2.08a1 1 0 00-.788 0l-7 3a1 1 0 000 1.84L5.25 8.051a.999.999 0 01.356-.257l4-1.714a1 1 0 11.788 1.838L7.667 9.088l1.94.831a1 1 0 00.787 0l7-3a1 1 0 000-1.838l-7-3zM3.31 9.397L5 10.12v4.102a8.969 8.969 0 00-1.05-.174 1 1 0 01-.89-.89 11.115 11.115 0 01.25-3.762zM9.3 16.573A9.026 9.026 0 007 14.935v-3.957l1.818.78a3 3 0 002.364 0l5.508-2.361a11.026 11.026 0 01.25 3.762 1 1 0 01-.89.89 8.968 8.968 0 00-5.35 2.524 1 1 0 01-1.4 0zM6 18a1 1 0 001-1v-2.065a8.935 8.935 0 00-2-.712V17a1 1 0 001 1z">
+                                </path>
+                            </svg>
+                            <div>
+                                <h1 class="text-xl font-bold">Smart Science Classroom</h1>
+                                <p class="text-sm text-blue-200">ห้องเรียนคุณครูสุวรรณา</p>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Lesson Info -->
+                    <div class="hidden md:flex items-center">
+                        <span class="bg-blue-800 text-white text-sm px-3 py-1 rounded-full">ป.5 - ระบบสุริยะ: การหมุนโลก
+                            / เฟสดวงจันทร์</span>
+                    </div>
+                    <!-- Desktop Navigation -->
+                    <nav class="hidden md:block">
+                        <ul class="flex space-x-6">
+                            <li>
+                                <a class="text-white font-medium hover:text-blue-200" href="index.html">หน้าหลัก</a>
+                            </li>
+                            <li>
+                                <a class="text-white font-medium hover:text-blue-200"
+                                    href="Classroom-ChackIn.html">เช็กชื่อเข้าเรียน</a>
+                            </li>
+                            <li>
+                                <a class="text-white font-medium border-b-2 border-white pb-1"
+                                    href="Classroom_A1.html">บทเรียน</a>
+                            </li>
+                            <li>
+                                <a class="text-white font-medium hover:text-blue-200"
+                                    href="Dashboard.html">แดชบอร์ด</a>
+                            </li>
+                        </ul>
+                    </nav>
+                </div>
+            </div>
+        </header>
+        <!-- Main Content -->
+        <main class="flex-grow container mx-auto px-4 py-6">
+            <!-- View Toggle Buttons (for demo purposes) -->
+            <div class="mb-6 flex justify-center">
+                <div class="bg-white rounded-lg shadow-md p-1 inline-flex">
+                    <button class="btn px-4 py-2 rounded-lg bg-blue-700 text-white font-medium" id="teacherViewBtn">
+                        <span class="btn-content">มุมมองครู</span>
+                    </button>
+                    <button class="btn px-4 py-2 rounded-lg text-gray-700 font-medium" id="studentViewBtn">
+                        <span class="btn-content">มุมมองนักเรียน</span>
+                    </button>
+                </div>
+            </div>
+            <!-- Teacher Control Bar (visible only in teacher view) -->
+            <div class="card bg-white rounded-lg shadow-md overflow-hidden mb-6" id="teacherControlBar">
+                <div class="bg-blue-700 h-2"></div>
+                <div class="p-4">
+                    <div class="flex flex-wrap items-center justify-between">
+                        <div class="flex flex-wrap items-center gap-4 mb-2 md:mb-0">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1"
+                                    for="currentStage">ขั้นตอนปัจจุบัน:</label>
+                                <select
+                                    class="border border-gray-300 rounded-md py-1 px-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                    id="currentStage">
+                                    <option>Pre-test</option>
+                                    <option selected="">Mini Lab</option>
+                                    <option>Post-test</option>
+                                    <option>Exit Ticket</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1"
+                                    for="activityStatus">สถานะกิจกรรม:</label>
+                                <div class="flex items-center">
+                                    <span class="relative inline-block w-10 mr-2 align-middle select-none">
+                                        <input checked=""
+                                            class="toggle-checkbox absolute block w-6 h-6 rounded-full bg-white border-4 border-gray-300 appearance-none cursor-pointer transition-transform duration-200 ease-in-out translate-x-full"
+                                            id="activityStatus" type="checkbox" />
+                                        <label
+                                            class="toggle-label block overflow-hidden h-6 rounded-full bg-green-500 cursor-pointer"
+                                            for="activityStatus"></label>
+                                    </span>
+                                    <span class="text-sm text-green-600 font-medium" id="statusText">เปิดใช้งาน</span>
+                                </div>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1"
+                                    for="lessonSelect">บทเรียน:</label>
+                                <select
+                                    class="border border-gray-300 rounded-md py-1 px-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                    id="lessonSelect">
+                                    <option>ไฟฟ้า: ต่อวงจรให้ไฟติด</option>
+                                    <option selected="">ระบบสุริยะ: การหมุนโลก / เฟสดวงจันทร์</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="flex space-x-2 mt-4 md:mt-0">
+                            <button class="btn bg-blue-700 hover:bg-blue-800 text-white font-bold py-2 px-4 rounded"
+                                id="nextStageBtn">
+                                <span class="btn-content flex items-center">
+                                    <svg class="h-5 w-5 mr-1" fill="currentColor" viewbox="0 0 20 20"
+                                        xmlns="http://www.w3.org/2000/svg">
+                                        <path clip-rule="evenodd"
+                                            d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z"
+                                            fill-rule="evenodd"></path>
+                                    </svg>
+                                    ไปขั้นตอนถัดไป
+                                </span>
+                            </button>
+                            <button class="btn bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded"
+                                id="resetBtn">
+                                <span class="btn-content flex items-center">
+                                    <svg class="h-5 w-5 mr-1" fill="currentColor" viewbox="0 0 20 20"
+                                        xmlns="http://www.w3.org/2000/svg">
+                                        <path clip-rule="evenodd"
+                                            d="M4 2a1 1 0 011 1v2.101a7.002 7.002 0 0111.601 2.566 1 1 0 11-1.885.666A5.002 5.002 0 005.999 7H9a1 1 0 010 2H4a1 1 0 01-1-1V3a1 1 0 011-1zm.008 9.057a1 1 0 011.276.61A5.002 5.002 0 0014.001 13H11a1 1 0 110-2h5a1 1 0 011 1v5a1 1 0 11-2 0v-2.101a7.002 7.002 0 01-11.601-2.566 1 1 0 01.61-1.276z"
+                                            fill-rule="evenodd"></path>
+                                    </svg>
+                                    รีเซ็ตข้อมูล
+                                </span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Lesson Content Container -->
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <!-- Main Content Area (2/3 width on large screens) -->
+                <div class="lg:col-span-2">
+                    <!-- Lesson Stage Tabs -->
+                    <div class="bg-white rounded-t-lg shadow-md relative">
+                        <div class="flex border-b relative">
+                            <button class="tab-btn py-3 px-6 text-sm font-medium text-gray-500 relative"
+                                data-tab="pretest">
+                                Pre-test
+                            </button>
+                            <button class="tab-btn py-3 px-6 text-sm font-medium text-blue-700 relative active"
+                                data-tab="minilab">
+                                Mini Lab
+                            </button>
+                            <button class="tab-btn py-3 px-6 text-sm font-medium text-gray-500 relative"
+                                data-tab="posttest">
+                                Post-test
+                            </button>
+                            <button class="tab-btn py-3 px-6 text-sm font-medium text-gray-500 relative"
+                                data-tab="exitticket">
+                                Exit Ticket
+                            </button>
+                            <div class="tab-indicator absolute bottom-0 left-0 h-0.5 bg-blue-700 transition-all duration-300"
+                                style="width: 25%; transform: translateX(100%);"></div>
+                        </div>
+                    </div>
+                    <!-- Tab Content -->
+                    <div class="bg-white rounded-b-lg shadow-md overflow-hidden">
+                        <!-- Mini Lab Content - Solar System -->
+                        <div class="tab-content p-6" id="minilab-content">
+                            <!-- Lab Selection Tabs -->
+                            <div class="mb-6">
+                                <div class="flex border-b relative">
+                                    <button
+                                        class="lab-tab-btn py-2 px-4 text-sm font-medium text-purple-700 relative border-b-2 border-purple-700"
+                                        id="earthRotationBtn">
+                                        การหมุนโลก
+                                    </button>
+                                    <button
+                                        class="lab-tab-btn py-2 px-4 text-sm font-medium text-gray-500 relative border-b-2 border-transparent"
+                                        id="moonPhasesBtn">
+                                        เฟสดวงจันทร์
+                                    </button>
+                                </div>
+                            </div>
+                            <!-- Earth Rotation Lab -->
+                            <div id="earthRotationLab">
+                                <div class="flex justify-between items-center mb-4">
+                                    <h2 class="text-xl font-bold text-purple-800">Mini Lab: การหมุนโลก</h2>
+                                    <div class="flex space-x-2">
+                                        <button
+                                            class="btn bg-yellow-500 hover:bg-yellow-600 text-white font-bold py-1 px-3 rounded-full text-sm"
+                                            id="helpBtn">
+                                            <span class="btn-content flex items-center">
+                                                <svg class="h-4 w-4 mr-1" fill="currentColor" viewbox="0 0 20 20"
+                                                    xmlns="http://www.w3.org/2000/svg">
+                                                    <path clip-rule="evenodd"
+                                                        d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-8-3a1 1 0 00-.867.5 1 1 0 11-1.731-1A3 3 0 0113 8a3.001 3.001 0 01-2 2.83V11a1 1 0 11-2 0v-1a1 1 0 011-1 1 1 0 100-2zm0 8a1 1 0 100-2 1 1 0 000 2z"
+                                                        fill-rule="evenodd"></path>
+                                                </svg>
+                                                ช่วยเหลือ
+                                            </span>
+                                        </button>
+                                        <button
+                                            class="btn bg-gray-500 hover:bg-gray-600 text-white font-bold py-1 px-3 rounded-full text-sm"
+                                            id="resetLabBtn">
+                                            <span class="btn-content flex items-center">
+                                                <svg class="h-4 w-4 mr-1" fill="currentColor" viewbox="0 0 20 20"
+                                                    xmlns="http://www.w3.org/2000/svg">
+                                                    <path clip-rule="evenodd"
+                                                        d="M4 2a1 1 0 011 1v2.101a7.002 7.002 0 0111.601 2.566 1 1 0 11-1.885.666A5.002 5.002 0 005.999 7H9a1 1 0 010 2H4a1 1 0 01-1-1V3a1 1 0 011-1zm.008 9.057a1 1 0 011.276.61A5.002 5.002 0 0014.001 13H11a1 1 0 110-2h5a1 1 0 011 1v5a1 1 0 11-2 0v-2.101a7.002 7.002 0 01-11.601-2.566 1 1 0 01.61-1.276z"
+                                                        fill-rule="evenodd"></path>
+                                                </svg>
+                                                เริ่มใหม่
+                                            </span>
+                                        </button>
+                                    </div>
+                                </div>
+                                <p class="mb-6 text-gray-600">ศึกษาการหมุนของโลกรอบตัวเองและการเกิดกลางวันกลางคืน
+                                    โดยสังเกตการเปลี่ยนแปลงของแสงบนโลกและตำแหน่งของประเทศไทย</p>
+                                <!-- Earth Rotation Simulation -->
+                                <div class="card bg-gray-900 p-6 rounded-lg mb-6 relative" style="height: 350px;">
+                                    <!-- Sun -->
+                                    <div class="absolute left-16 top-1/2 transform -translate-y-1/2">
+                                        <div class="w-20 h-20 bg-yellow-300 rounded-full sun-glow"></div>
+                                    </div>
+                                    <!-- Earth -->
+                                    <div class="absolute left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2">
+                                        <div class="relative w-40 h-40 earth-rotate" id="earth">
+                                            <!-- Earth sphere -->
+                                            <div class="absolute inset-0 rounded-full overflow-hidden">
+                                                <!-- Day/night visualization -->
+                                                <div class="absolute inset-0 rounded-full"
+                                                    style="background: linear-gradient(90deg, #3B82F6 50%, #1E3A8A 50%);">
+                                                </div>
+                                                <!-- Continents (simplified) -->
+                                                <div class="absolute inset-0">
+                                                    <!-- Asia -->
+                                                    <div class="absolute bg-green-700 opacity-80"
+                                                        style="width: 25%; height: 20%; top: 25%; left: 65%; border-radius: 50% 40% 60% 30%;">
+                                                    </div>
+                                                    <!-- Africa -->
+                                                    <div class="absolute bg-green-700 opacity-80"
+                                                        style="width: 20%; height: 25%; top: 40%; left: 50%; border-radius: 40% 50% 30% 60%;">
+                                                    </div>
+                                                    <!-- Europe -->
+                                                    <div class="absolute bg-green-700 opacity-80"
+                                                        style="width: 15%; height: 10%; top: 20%; left: 50%; border-radius: 30% 40% 50% 60%;">
+                                                    </div>
+                                                    <!-- North America -->
+                                                    <div class="absolute bg-green-700 opacity-80"
+                                                        style="width: 20%; height: 20%; top: 20%; left: 20%; border-radius: 40% 30% 60% 50%;">
+                                                    </div>
+                                                    <!-- South America -->
+                                                    <div class="absolute bg-green-700 opacity-80"
+                                                        style="width: 10%; height: 20%; top: 45%; left: 30%; border-radius: 30% 60% 40% 50%;">
+                                                    </div>
+                                                    <!-- Australia -->
+                                                    <div class="absolute bg-green-700 opacity-80"
+                                                        style="width: 10%; height: 10%; top: 60%; left: 75%; border-radius: 50% 40% 30% 60%;">
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <!-- Thailand marker -->
+                                            <div class="absolute w-4 h-4 bg-red-500 rounded-full thailand-pulse"
+                                                id="thailand-marker" style="top: 35%; left: 72%;"></div>
+                                            <!-- Rotation axis line -->
+                                            <div
+                                                class="absolute h-48 w-0.5 bg-white opacity-50 left-1/2 -top-4 transform -translate-x-1/2 rotate-12">
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <!-- Labels -->
+                                    <div class="absolute top-4 left-16 text-yellow-300 text-sm font-bold">ดวงอาทิตย์
+                                    </div>
+                                    <div
+                                        class="absolute top-4 left-1/2 transform -translate-x-1/2 text-blue-300 text-sm font-bold">
+                                        โลก</div>
+                                    <div
+                                        class="absolute top-1/2 left-1/2 transform translate-x-12 text-red-400 text-xs font-bold">
+                                        ประเทศไทย</div>
+                                    <!-- Day/Night Labels -->
+                                    <div class="absolute bottom-4 left-1/3 text-white text-sm font-bold">กลางคืน</div>
+                                    <div class="absolute bottom-4 right-1/3 text-white text-sm font-bold">กลางวัน</div>
+                                </div>
+                                <!-- Controls -->
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                                    <div class="card bg-white rounded-lg shadow-md overflow-hidden">
+                                        <div class="bg-blue-700 h-2"></div>
+                                        <div class="p-4">
+                                            <h3 class="text-lg font-semibold text-blue-900 mb-3">ควบคุมการจำลอง</h3>
+                                            <div class="bg-gray-50 p-4 rounded-lg">
+                                                <div class="flex items-center justify-between mb-4">
+                                                    <button
+                                                        class="btn bg-purple-600 hover:bg-purple-700 text-white font-bold py-2 px-4 rounded-full"
+                                                        id="playBtn">
+                                                        <span class="btn-content flex items-center">
+                                                            <svg class="h-5 w-5" fill="currentColor" viewbox="0 0 20 20"
+                                                                xmlns="http://www.w3.org/2000/svg">
+                                                                <path clip-rule="evenodd"
+                                                                    d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z"
+                                                                    fill-rule="evenodd"></path>
+                                                            </svg>
+                                                        </span>
+                                                    </button>
+                                                    <button
+                                                        class="btn bg-gray-600 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded-full"
+                                                        id="pauseBtn">
+                                                        <span class="btn-content flex items-center">
+                                                            <svg class="h-5 w-5" fill="currentColor" viewbox="0 0 20 20"
+                                                                xmlns="http://www.w3.org/2000/svg">
+                                                                <path clip-rule="evenodd"
+                                                                    d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zM7 8a1 1 0 012 0v4a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v4a1 1 0 102 0V8a1 1 0 00-1-1z"
+                                                                    fill-rule="evenodd"></path>
+                                                            </svg>
+                                                        </span>
+                                                    </button>
+                                                    <button
+                                                        class="btn bg-gray-600 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded-full"
+                                                        id="resetRotationBtn">
+                                                        <span class="btn-content flex items-center">
+                                                            <svg class="h-5 w-5" fill="currentColor" viewbox="0 0 20 20"
+                                                                xmlns="http://www.w3.org/2000/svg">
+                                                                <path clip-rule="evenodd"
+                                                                    d="M4 2a1 1 0 011 1v2.101a7.002 7.002 0 0111.601 2.566 1 1 0 11-1.885.666A5.002 5.002 0 005.999 7H9a1 1 0 010 2H4a1 1 0 01-1-1V3a1 1 0 011-1zm.008 9.057a1 1 0 011.276.61A5.002 5.002 0 0014.001 13H11a1 1 0 110-2h5a1 1 0 011 1v5a1 1 0 11-2 0v-2.101a7.002 7.002 0 01-11.601-2.566 1 1 0 01.61-1.276z"
+                                                                    fill-rule="evenodd"></path>
+                                                            </svg>
+                                                        </span>
+                                                    </button>
+                                                </div>
+                                                <div class="mb-2">
+                                                    <label class="block text-sm font-medium text-gray-700 mb-1"
+                                                        for="speed">ความเร็วการหมุน</label>
+                                                    <input
+                                                        class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer"
+                                                        id="speed" max="10" min="1" name="speed" type="range"
+                                                        value="5" />
+                                                </div>
+                                                <div class="text-center mt-4">
+                                                    <div class="text-lg font-bold" id="timeDisplay">12:00</div>
+                                                    <div class="text-sm" id="dayNightStatus">กลางวันที่ประเทศไทย</div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="card bg-white rounded-lg shadow-md overflow-hidden">
+                                        <div class="bg-blue-700 h-2"></div>
+                                        <div class="p-4">
+                                            <h3 class="text-lg font-semibold text-blue-900 mb-3">ข้อมูลการหมุนโลก</h3>
+                                            <div class="bg-gray-50 p-4 rounded-lg">
+                                                <ul class="space-y-3">
+                                                    <li class="flex justify-between items-center">
+                                                        <span class="text-gray-700">เวลาที่โลกหมุนรอบตัวเอง 1
+                                                            รอบ:</span>
+                                                        <span class="font-medium text-blue-800">24 ชั่วโมง</span>
+                                                    </li>
+                                                    <li class="flex justify-between items-center">
+                                                        <span class="text-gray-700">ทิศทางการหมุน:</span>
+                                                        <span
+                                                            class="font-medium text-blue-800">จากตะวันตกไปตะวันออก</span>
+                                                    </li>
+                                                    <li class="flex justify-between items-center">
+                                                        <span class="text-gray-700">เวลาปัจจุบันที่ประเทศไทย:</span>
+                                                        <span class="font-medium text-blue-800" id="currentTime">14:30
+                                                            น.</span>
+                                                    </li>
+                                                </ul>
+                                                <div class="mt-4 pt-4 border-t border-gray-200">
+                                                    <button
+                                                        class="btn bg-blue-700 hover:bg-blue-800 text-white font-bold py-2 px-4 rounded w-full"
+                                                        id="showInfoBtn">
+                                                        <span class="btn-content flex items-center justify-center">
+                                                            <svg class="h-5 w-5 mr-1" fill="currentColor"
+                                                                viewbox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                                                                <path clip-rule="evenodd"
+                                                                    d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z"
+                                                                    fill-rule="evenodd"></path>
+                                                            </svg>
+                                                            ข้อมูลเพิ่มเติม
+                                                        </span>
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- Explanation -->
+                                <div class="card bg-white rounded-lg shadow-md overflow-hidden mb-6">
+                                    <div class="bg-purple-700 h-2"></div>
+                                    <div class="p-4">
+                                        <h3 class="text-lg font-semibold text-purple-800 mb-3">การเกิดกลางวันและกลางคืน
+                                        </h3>
+                                        <div class="bg-purple-50 p-4 rounded-lg">
+                                            <p class="text-sm text-purple-700 mb-3">
+                                                โลกหมุนรอบตัวเองใช้เวลา 24 ชั่วโมง ทำให้เกิดปรากฏการณ์กลางวันและกลางคืน
+                                            </p>
+                                            <ul class="list-disc pl-5 text-sm text-purple-700 space-y-2">
+                                                <li>ด้านที่หันเข้าหาดวงอาทิตย์จะเป็นเวลากลางวัน</li>
+                                                <li>ด้านที่หันออกจากดวงอาทิตย์จะเป็นเวลากลางคืน</li>
+                                                <li>ประเทศไทยอยู่ในซีกโลกตะวันออก</li>
+                                                <li>เมื่อประเทศไทยอยู่ด้านที่หันเข้าหาดวงอาทิตย์
+                                                    จะเป็นเวลากลางวันในประเทศไทย</li>
+                                            </ul>
+                                            <div class="mt-4 flex justify-center">
+                                                <button
+                                                    class="btn bg-purple-600 hover:bg-purple-700 text-white font-bold py-2 px-4 rounded"
+                                                    id="quizBtn">
+                                                    <span class="btn-content flex items-center">
+                                                        <svg class="h-5 w-5 mr-1" fill="currentColor"
+                                                            viewbox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                                                            <path clip-rule="evenodd"
+                                                                d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-8-3a1 1 0 00-.867.5 1 1 0 11-1.731-1A3 3 0 0113 8a3.001 3.001 0 01-2 2.83V11a1 1 0 11-2 0v-1a1 1 0 011-1 1 1 0 100-2zm0 8a1 1 0 100-2 1 1 0 000 2z"
+                                                                fill-rule="evenodd"></path>
+                                                        </svg>
+                                                        ทดสอบความเข้าใจ
+                                                    </span>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- Moon Phases Lab (hidden by default) -->
+                            <div class="hidden" id="moonPhasesLab">
+                                <div class="flex justify-between items-center mb-4">
+                                    <h2 class="text-xl font-bold text-purple-800">Mini Lab: เฟสดวงจันทร์</h2>
+                                    <div class="flex space-x-2">
+                                        <button
+                                            class="btn bg-yellow-500 hover:bg-yellow-600 text-white font-bold py-1 px-3 rounded-full text-sm"
+                                            id="helpBtnMoon">
+                                            <span class="btn-content flex items-center">
+                                                <svg class="h-4 w-4 mr-1" fill="currentColor" viewbox="0 0 20 20"
+                                                    xmlns="http://www.w3.org/2000/svg">
+                                                    <path clip-rule="evenodd"
+                                                        d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-8-3a1 1 0 00-.867.5 1 1 0 11-1.731-1A3 3 0 0113 8a3.001 3.001 0 01-2 2.83V11a1 1 0 11-2 0v-1a1 1 0 011-1 1 1 0 100-2zm0 8a1 1 0 100-2 1 1 0 000 2z"
+                                                        fill-rule="evenodd"></path>
+                                                </svg>
+                                                ช่วยเหลือ
+                                            </span>
+                                        </button>
+                                        <button
+                                            class="btn bg-gray-500 hover:bg-gray-600 text-white font-bold py-1 px-3 rounded-full text-sm"
+                                            id="resetMoonBtn">
+                                            <span class="btn-content flex items-center">
+                                                <svg class="h-4 w-4 mr-1" fill="currentColor" viewbox="0 0 20 20"
+                                                    xmlns="http://www.w3.org/2000/svg">
+                                                    <path clip-rule="evenodd"
+                                                        d="M4 2a1 1 0 011 1v2.101a7.002 7.002 0 0111.601 2.566 1 1 0 11-1.885.666A5.002 5.002 0 005.999 7H9a1 1 0 010 2H4a1 1 0 01-1-1V3a1 1 0 011-1zm.008 9.057a1 1 0 011.276.61A5.002 5.002 0 0014.001 13H11a1 1 0 110-2h5a1 1 0 011 1v5a1 1 0 11-2 0v-2.101a7.002 7.002 0 01-11.601-2.566 1 1 0 01.61-1.276z"
+                                                        fill-rule="evenodd"></path>
+                                                </svg>
+                                                เริ่มใหม่
+                                            </span>
+                                        </button>
+                                    </div>
+                                </div>
+                                <p class="mb-6 text-gray-600">ศึกษาเฟสต่างๆ
+                                    ของดวงจันทร์ที่เกิดจากตำแหน่งของดวงจันทร์รอบโลก
+                                    คลิกที่ตำแหน่งดวงจันทร์เพื่อดูรายละเอียด</p>
+                                <!-- Moon Phases Simulation -->
+                                <div class="card bg-gray-900 p-6 rounded-lg mb-6 relative" style="height: 400px;">
+                                    <!-- Sun (light source) -->
+                                    <div class="absolute -left-4 top-1/2 transform -translate-y-1/2">
+                                        <div class="w-16 h-16 bg-yellow-300 rounded-full sun-glow"></div>
+                                    </div>
+                                    <!-- Light rays (simplified) -->
+                                    <div class="absolute left-12 top-0 w-full h-full pointer-events-none">
+                                        <svg height="100%" viewbox="0 0 400 400" width="100%"
+                                            xmlns="http://www.w3.org/2000/svg">
+                                            <defs>
+                                                <lineargradient id="lightRay" x1="0%" x2="100%" y1="0%" y2="0%">
+                                                    <stop offset="0%" style="stop-color:rgba(253, 224, 71, 0.3);">
+                                                    </stop>
+                                                    <stop offset="100%" style="stop-color:rgba(253, 224, 71, 0);">
+                                                    </stop>
+                                                </lineargradient>
+                                            </defs>
+                                            <rect fill="url(#lightRay)" height="400" width="400" x="0" y="0"></rect>
+                                        </svg>
+                                    </div>
+                                    <!-- Earth at center -->
+                                    <div class="absolute left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2">
+                                        <div class="w-24 h-24 bg-blue-500 rounded-full border-4 border-blue-700">
+                                            <!-- Simplified continents -->
+                                            <div class="absolute inset-0">
+                                                <div class="absolute bg-green-700 opacity-80"
+                                                    style="width: 25%; height: 20%; top: 25%; left: 65%; border-radius: 50% 40% 60% 30%;">
+                                                </div>
+                                                <div class="absolute bg-green-700 opacity-80"
+                                                    style="width: 20%; height: 25%; top: 40%; left: 50%; border-radius: 40% 50% 30% 60%;">
+                                                </div>
+                                                <div class="absolute bg-green-700 opacity-80"
+                                                    style="width: 20%; height: 20%; top: 20%; left: 20%; border-radius: 40% 30% 60% 50%;">
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <!-- Moon orbit circle (for visual reference) -->
+                                    <div
+                                        class="absolute left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2 w-80 h-80 rounded-full border border-gray-500 border-dashed">
+                                    </div>
+                                    <!-- Moon positions around orbit (8 positions) -->
+                                    <!-- Position 1: New Moon -->
+                                    <div class="absolute left-1/2 top-1/4 transform -translate-x-1/2 -translate-y-1/2 cursor-pointer moon-position"
+                                        data-desc="ดวงจันทร์อยู่ระหว่างโลกกับดวงอาทิตย์ เราจึงมองไม่เห็นด้านที่แสงอาทิตย์ส่องถึง"
+                                        data-name="เดือนมืด (New Moon)" data-position="1">
+                                        <div
+                                            class="w-12 h-12 bg-gray-400 rounded-full border-2 border-gray-500 hover:border-yellow-300 transition-all duration-300 transform hover:scale-110">
+                                        </div>
+                                    </div>
+                                    <!-- Position 2: Waxing Crescent -->
+                                    <div class="absolute left-3/4 top-1/3 transform -translate-x-1/2 -translate-y-1/2 cursor-pointer moon-position"
+                                        data-desc="เราเริ่มเห็นดวงจันทร์เป็นเสี้ยวเล็กๆ ทางด้านขวา เป็นช่วงขึ้น 3-5 ค่ำ"
+                                        data-name="ข้างขึ้น เสี้ยวแรก (Waxing Crescent)" data-position="2">
+                                        <div
+                                            class="w-12 h-12 bg-gray-400 rounded-full border-2 border-gray-500 hover:border-yellow-300 transition-all duration-300 transform hover:scale-110">
+                                        </div>
+                                    </div>
+                                    <!-- Position 3: First Quarter -->
+                                    <div class="absolute left-[85%] top-1/2 transform -translate-x-1/2 -translate-y-1/2 cursor-pointer moon-position"
+                                        data-desc="เราเห็นดวงจันทร์เป็นครึ่งวงกลมทางด้านขวา เป็นช่วงขึ้น 7-8 ค่ำ"
+                                        data-name="ข้างขึ้น ครึ่งดวง (First Quarter)" data-position="3">
+                                        <div
+                                            class="w-12 h-12 bg-gray-400 rounded-full border-2 border-gray-500 hover:border-yellow-300 transition-all duration-300 transform hover:scale-110">
+                                        </div>
+                                    </div>
+                                    <!-- Position 4: Waxing Gibbous -->
+                                    <div class="absolute left-3/4 top-2/3 transform -translate-x-1/2 -translate-y-1/2 cursor-pointer moon-position"
+                                        data-desc="เราเห็นดวงจันทร์เกือบเต็มดวง มีส่วนมืดเล็กน้อยทางด้านซ้าย เป็นช่วงขึ้น 10-13 ค่ำ"
+                                        data-name="ข้างขึ้น เกือบเต็มดวง (Waxing Gibbous)" data-position="4">
+                                        <div
+                                            class="w-12 h-12 bg-gray-400 rounded-full border-2 border-gray-500 hover:border-yellow-300 transition-all duration-300 transform hover:scale-110">
+                                        </div>
+                                    </div>
+                                    <!-- Position 5: Full Moon -->
+                                    <div class="absolute left-1/2 top-[85%] transform -translate-x-1/2 -translate-y-1/2 cursor-pointer moon-position"
+                                        data-desc="เราเห็นดวงจันทร์เต็มดวง เพราะโลกอยู่ระหว่างดวงจันทร์กับดวงอาทิตย์ เป็นช่วงขึ้น 15 ค่ำ"
+                                        data-name="เดือนเพ็ญ (Full Moon)" data-position="5">
+                                        <div
+                                            class="w-12 h-12 bg-gray-400 rounded-full border-2 border-gray-500 hover:border-yellow-300 transition-all duration-300 transform hover:scale-110">
+                                        </div>
+                                    </div>
+                                    <!-- Position 6: Waning Gibbous -->
+                                    <div class="absolute left-1/4 top-2/3 transform -translate-x-1/2 -translate-y-1/2 cursor-pointer moon-position"
+                                        data-desc="เราเห็นดวงจันทร์เกือบเต็มดวง มีส่วนมืดเล็กน้อยทางด้านขวา เป็นช่วงแรม 3-5 ค่ำ"
+                                        data-name="ข้างแรม เกือบเต็มดวง (Waning Gibbous)" data-position="6">
+                                        <div
+                                            class="w-12 h-12 bg-gray-400 rounded-full border-2 border-gray-500 hover:border-yellow-300 transition-all duration-300 transform hover:scale-110">
+                                        </div>
+                                    </div>
+                                    <!-- Position 7: Last Quarter -->
+                                    <div class="absolute left-[15%] top-1/2 transform -translate-x-1/2 -translate-y-1/2 cursor-pointer moon-position"
+                                        data-desc="เราเห็นดวงจันทร์เป็นครึ่งวงกลมทางด้านซ้าย เป็นช่วงแรม 7-8 ค่ำ"
+                                        data-name="ข้างแรม ครึ่งดวง (Last Quarter)" data-position="7">
+                                        <div
+                                            class="w-12 h-12 bg-gray-400 rounded-full border-2 border-gray-500 hover:border-yellow-300 transition-all duration-300 transform hover:scale-110">
+                                        </div>
+                                    </div>
+                                    <!-- Position 8: Waning Crescent -->
+                                    <div class="absolute left-1/4 top-1/3 transform -translate-x-1/2 -translate-y-1/2 cursor-pointer moon-position"
+                                        data-desc="เราเห็นดวงจันทร์เป็นเสี้ยวเล็กๆ ทางด้านซ้าย เป็นช่วงแรม 11-13 ค่ำ"
+                                        data-name="ข้างแรม เสี้ยวสุดท้าย (Waning Crescent)" data-position="8">
+                                        <div
+                                            class="w-12 h-12 bg-gray-400 rounded-full border-2 border-gray-500 hover:border-yellow-300 transition-all duration-300 transform hover:scale-110">
+                                        </div>
+                                    </div>
+                                    <!-- Labels -->
+                                    <div
+                                        class="absolute top-2 left-1/2 transform -translate-x-1/2 text-white text-sm font-bold">
+                                        เดือนมืด</div>
+                                    <div
+                                        class="absolute top-2 right-1/4 transform -translate-x-1/2 text-white text-sm font-bold">
+                                        ข้างขึ้น</div>
+                                    <div
+                                        class="absolute bottom-2 left-1/2 transform -translate-x-1/2 text-white text-sm font-bold">
+                                        เดือนเพ็ญ</div>
+                                    <div
+                                        class="absolute top-2 left-1/4 transform -translate-x-1/2 text-white text-sm font-bold">
+                                        ข้างแรม</div>
+                                </div>
+                                <!-- Moon Phase Details -->
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                                    <div class="card bg-white rounded-lg shadow-md overflow-hidden">
+                                        <div class="bg-purple-700 h-2"></div>
+                                        <div class="p-4">
+                                            <h3 class="text-lg font-semibold text-purple-800 mb-3">เฟสดวงจันทร์ที่เลือก
+                                            </h3>
+                                            <div class="bg-gray-50 p-4 rounded-lg flex items-center">
+                                                <!-- Selected moon phase visualization -->
+                                                <div class="mr-4">
+                                                    <div class="w-24 h-24 bg-gray-300 rounded-full overflow-hidden relative"
+                                                        id="moonPhaseDisplay">
+                                                        <!-- This div represents the shadow part of the moon -->
+                                                        <div class="absolute inset-0 bg-gray-900 rounded-r-full"
+                                                            id="moonShadow" style="width: 50%;"></div>
+                                                    </div>
+                                                </div>
+                                                <div>
+                                                    <h4 class="text-lg font-bold text-purple-800" id="moonPhaseName">
+                                                        ข้างขึ้น</h4>
+                                                    <p class="text-sm text-gray-700" id="moonPhaseDate">วันขึ้น 7 ค่ำ
+                                                    </p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="card bg-white rounded-lg shadow-md overflow-hidden">
+                                        <div class="bg-purple-700 h-2"></div>
+                                        <div class="p-4">
+                                            <h3 class="text-lg font-semibold text-purple-800 mb-3">คำอธิบาย</h3>
+                                            <div class="bg-gray-50 p-4 rounded-lg">
+                                                <p class="text-sm text-gray-700" id="moonPhaseDescription">
+                                                    ในช่วงข้างขึ้น เราจะเห็นดวงจันทร์เป็นรูปครึ่งวงกลมทางด้านขวา
+                                                    เกิดจากแสงอาทิตย์ส่องสว่างเพียงครึ่งหนึ่งของดวงจันทร์ที่หันมาทางโลก
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- Moon Phases Information -->
+                                <div class="card bg-white rounded-lg shadow-md overflow-hidden mb-6">
+                                    <div class="bg-purple-700 h-2"></div>
+                                    <div class="p-4">
+                                        <h3 class="text-lg font-semibold text-purple-800 mb-3">เฟสดวงจันทร์</h3>
+                                        <div class="bg-purple-50 p-4 rounded-lg">
+                                            <p class="text-sm text-purple-700 mb-3">
+                                                ดวงจันทร์โคจรรอบโลกใช้เวลาประมาณ 29.5 วัน ทำให้เกิดเฟสต่างๆ
+                                                ของดวงจันทร์ที่เราเห็นจากโลก
+                                            </p>
+                                            <div class="grid grid-cols-2 md:grid-cols-4 gap-3 text-xs text-purple-700">
+                                                <div class="bg-white p-2 rounded-lg shadow-sm">
+                                                    <div class="font-semibold mb-1">เดือนมืด (New Moon)</div>
+                                                    <div>ดวงจันทร์อยู่ระหว่างโลกกับดวงอาทิตย์</div>
+                                                </div>
+                                                <div class="bg-white p-2 rounded-lg shadow-sm">
+                                                    <div class="font-semibold mb-1">ข้างขึ้น (Waxing)</div>
+                                                    <div>ส่วนสว่างของดวงจันทร์ค่อยๆ เพิ่มขึ้น</div>
+                                                </div>
+                                                <div class="bg-white p-2 rounded-lg shadow-sm">
+                                                    <div class="font-semibold mb-1">เดือนเพ็ญ (Full Moon)</div>
+                                                    <div>โลกอยู่ระหว่างดวงจันทร์กับดวงอาทิตย์</div>
+                                                </div>
+                                                <div class="bg-white p-2 rounded-lg shadow-sm">
+                                                    <div class="font-semibold mb-1">ข้างแรม (Waning)</div>
+                                                    <div>ส่วนสว่างของดวงจันทร์ค่อยๆ ลดลง</div>
+                                                </div>
+                                            </div>
+                                            <div class="mt-4 flex justify-center">
+                                                <button
+                                                    class="btn bg-purple-600 hover:bg-purple-700 text-white font-bold py-2 px-4 rounded"
+                                                    id="moonQuizBtn">
+                                                    <span class="btn-content flex items-center">
+                                                        <svg class="h-5 w-5 mr-1" fill="currentColor"
+                                                            viewbox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                                                            <path clip-rule="evenodd"
+                                                                d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-8-3a1 1 0 00-.867.5 1 1 0 11-1.731-1A3 3 0 0113 8a3.001 3.001 0 01-2 2.83V11a1 1 0 11-2 0v-1a1 1 0 011-1 1 1 0 100-2zm0 8a1 1 0 100-2 1 1 0 000 2z"
+                                                                fill-rule="evenodd"></path>
+                                                        </svg>
+                                                        ทดสอบความเข้าใจ
+                                                    </span>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Pre-test Content (hidden by default) -->
+                        <div class="tab-content p-6 hidden" id="pretest-content">
+                            <h2 class="text-xl font-bold text-blue-900 mb-4">แบบทดสอบก่อนเรียน</h2>
+                            <p class="mb-6 text-gray-600">ทำแบบทดสอบก่อนเรียนเพื่อวัดความรู้พื้นฐานเกี่ยวกับระบบสุริยะ
+                            </p>
+                            <!-- Pre-test content would go here -->
+                        </div>
+                        <!-- Post-test Content (hidden by default) -->
+                        <div class="tab-content p-6 hidden" id="posttest-content">
+                            <h2 class="text-xl font-bold text-blue-900 mb-4">แบบทดสอบหลังเรียน</h2>
+                            <p class="mb-6 text-gray-600">ทำแบบทดสอบหลังเรียนเพื่อวัดความเข้าใจเกี่ยวกับระบบสุริยะ</p>
+                            <!-- Post-test content would go here -->
+                        </div>
+                        <!-- Exit Ticket Content (hidden by default) -->
+                        <div class="tab-content p-6 hidden" id="exitticket-content">
+                            <h2 class="text-xl font-bold text-blue-900 mb-4">Exit Ticket</h2>
+                            <p class="mb-6 text-gray-600">แสดงความคิดเห็นเกี่ยวกับบทเรียนและสิ่งที่ได้เรียนรู้</p>
+                            <!-- Exit ticket content would go here -->
+                        </div>
+                    </div>
+                </div>
+                <!-- Teacher Dashboard (1/3 width on large screens, visible only in teacher view) -->
+                <div class="card bg-white rounded-lg shadow-md overflow-hidden" id="teacherDashboard">
+                    <div class="bg-blue-700 h-2"></div>
+                    <div class="p-4">
+                        <h2 class="text-lg font-bold text-blue-900 mb-4">แดชบอร์ดครู</h2>
+                        <!-- Class Stats -->
+                        <div class="mb-6">
+                            <h3 class="text-md font-semibold mb-2 border-b border-gray-200 pb-1">ข้อมูลคาบเรียน</h3>
+                            <div class="grid grid-cols-2 gap-2 text-sm">
+                                <div class="bg-blue-50 p-3 rounded-lg">
+                                    <div class="text-gray-600 text-xs">นักเรียนเช็กชื่อแล้ว</div>
+                                    <div class="text-xl font-bold text-blue-700">28/30</div>
+                                </div>
+                                <div class="bg-green-50 p-3 rounded-lg">
+                                    <div class="text-gray-600 text-xs">คะแนนเฉลี่ย Pre-test</div>
+                                    <div class="text-xl font-bold text-green-700">72%</div>
+                                </div>
+                                <div class="bg-purple-50 p-3 rounded-lg">
+                                    <div class="text-gray-600 text-xs">ทำ Lab สำเร็จ</div>
+                                    <div class="text-xl font-bold text-purple-700">22/28</div>
+                                </div>
+                                <div class="bg-yellow-50 p-3 rounded-lg">
+                                    <div class="text-gray-600 text-xs">คะแนนเฉลี่ย Post-test</div>
+                                    <div class="text-xl font-bold text-yellow-700">-</div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Problematic Questions -->
+                        <div class="mb-6">
+                            <h3 class="text-md font-semibold mb-2 border-b border-gray-200 pb-1">
+                                คำถามที่นักเรียนตอบผิดมาก</h3>
+                            <div class="text-sm space-y-2">
+                                <div class="bg-red-50 p-3 rounded-lg">
+                                    <div class="font-medium text-red-800 text-xs">ข้อ 3: โลกหมุนรอบตัวเองในทิศทางใด
+                                    </div>
+                                    <div class="text-red-600 text-xs">ตอบผิด 45%</div>
+                                </div>
+                                <div class="bg-red-50 p-3 rounded-lg">
+                                    <div class="font-medium text-red-800 text-xs">ข้อ 1:
+                                        โลกใช้เวลาหมุนรอบตัวเองกี่ชั่วโมง</div>
+                                    <div class="text-red-600 text-xs">ตอบผิด 30%</div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Students Needing Review -->
+                        <div class="mb-6">
+                            <h3 class="text-md font-semibold mb-2 border-b border-gray-200 pb-1">นักเรียนที่ควรทบทวน
+                            </h3>
+                            <div class="text-sm max-h-32 overflow-y-auto">
+                                <div class="flex justify-between items-center py-1 border-b border-gray-100">
+                                    <span class="text-xs">เด็กชายสมชาย ใจดี</span>
+                                    <span class="text-red-600 text-xs">40%</span>
+                                </div>
+                                <div class="flex justify-between items-center py-1 border-b border-gray-100">
+                                    <span class="text-xs">เด็กหญิงแก้วตา มีสุข</span>
+                                    <span class="text-red-600 text-xs">45%</span>
+                                </div>
+                                <div class="flex justify-between items-center py-1 border-b border-gray-100">
+                                    <span class="text-xs">เด็กชายวิชัย รักเรียน</span>
+                                    <span class="text-red-600 text-xs">50%</span>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Real-time Activity -->
+                        <div>
+                            <h3 class="text-md font-semibold mb-2 border-b border-gray-200 pb-1">กิจกรรมล่าสุด</h3>
+                            <div class="text-sm max-h-32 overflow-y-auto">
+                                <div class="py-1 border-b border-gray-100">
+                                    <div class="font-medium text-xs">เด็กหญิงนภัสสร วงศ์สุวรรณ</div>
+                                    <div class="text-gray-600 text-xs">ตอบคำถามเกี่ยวกับการหมุนโลกถูกต้อง</div>
+                                </div>
+                                <div class="py-1 border-b border-gray-100">
+                                    <div class="font-medium text-xs">เด็กชายธนกร สมบูรณ์</div>
+                                    <div class="text-gray-600 text-xs">กำลังดูการจำลองการหมุนโลก</div>
+                                </div>
+                                <div class="py-1 border-b border-gray-100">
+                                    <div class="font-medium text-xs">เด็กหญิงพิมพ์มาดา จันทร์เพ็ญ</div>
+                                    <div class="text-gray-600 text-xs">ปรับความเร็วการหมุนโลก</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+        <!-- Footer -->
+        <footer class="bg-blue-900 text-white py-6 mt-auto">
+            <div class="container mx-auto px-4">
+                <div class="flex flex-col md:flex-row justify-between items-center">
+                    <div class="mb-4 md:mb-0">
+                        <h3 class="text-lg font-bold mb-2">Smart Science Classroom</h3>
+                        <p class="text-sm text-blue-200">ห้องเรียนคุณครูสุวรรณา</p>
+                    </div>
+                    <div class="text-center md:text-right">
+                        <p class="text-sm mb-2">© 2023 กระทรวงศึกษาธิการ</p>
+                        <p class="text-xs text-blue-200">พัฒนาโดย ทีมพัฒนาเทคโนโลยีการศึกษา</p>
+                    </div>
+                </div>
+            </div>
+        </footer>
+    </div>
+    <script>
+        // Mobile menu functionality
+        document.addEventListener('DOMContentLoaded', function () {
+            const menuButton = document.getElementById('menuButton');
+            const closeMenu = document.getElementById('closeMenu');
+            const mobileMenu = document.getElementById('mobileMenu');
+            const overlay = document.getElementById('overlay');
+
+            // Open menu
+            menuButton.addEventListener('click', function () {
+                mobileMenu.classList.add('open');
+                overlay.classList.remove('hidden');
+            });
+
+            // Close menu
+            closeMenu.addEventListener('click', function () {
+                mobileMenu.classList.remove('open');
+                overlay.classList.add('hidden');
+            });
+
+            // Close menu when clicking overlay
+            overlay.addEventListener('click', function () {
+                mobileMenu.classList.remove('open');
+                overlay.classList.add('hidden');
+            });
+
+            // Button animations
+            const buttons = document.querySelectorAll('.btn');
+            buttons.forEach(button => {
+                button.addEventListener('mouseenter', function () {
+                    this.classList.add('animate-pulse');
+                });
+                button.addEventListener('mouseleave', function () {
+                    this.classList.remove('animate-pulse');
+                });
+                button.addEventListener('click', function () {
+                    this.classList.add('scale-95');
+                    setTimeout(() => {
+                        this.classList.remove('scale-95');
+                    }, 100);
+                });
+            });
+
+            // View toggle
+            const teacherViewBtn = document.getElementById('teacherViewBtn');
+            const studentViewBtn = document.getElementById('studentViewBtn');
+            const teacherElements = document.querySelectorAll('#teacherControlBar, #teacherDashboard');
+
+            teacherViewBtn.addEventListener('click', function () {
+                teacherElements.forEach(el => el.classList.remove('hidden'));
+                teacherViewBtn.classList.add('bg-blue-700', 'text-white');
+                teacherViewBtn.classList.remove('text-gray-700');
+                studentViewBtn.classList.remove('bg-blue-700', 'text-white');
+                studentViewBtn.classList.add('text-gray-700');
+            });
+
+            studentViewBtn.addEventListener('click', function () {
+                teacherElements.forEach(el => el.classList.add('hidden'));
+                teacherViewBtn.classList.remove('bg-blue-700', 'text-white');
+                teacherViewBtn.classList.add('text-gray-700');
+                studentViewBtn.classList.add('bg-blue-700', 'text-white');
+                studentViewBtn.classList.remove('text-gray-700');
+            });
+
+            // Tab functionality
+            const tabButtons = document.querySelectorAll('.tab-btn');
+            const tabContents = document.querySelectorAll('.tab-content');
+            const tabIndicator = document.querySelector('.tab-indicator');
+
+            tabButtons.forEach((button, index) => {
+                button.addEventListener('click', function () {
+                    // Update tab buttons
+                    tabButtons.forEach(btn => {
+                        btn.classList.remove('active', 'text-blue-700');
+                        btn.classList.add('text-gray-500');
+                    });
+                    this.classList.add('active', 'text-blue-700');
+                    this.classList.remove('text-gray-500');
+
+                    // Update tab indicator
+                    tabIndicator.style.width = `${100 / tabButtons.length}%`;
+                    tabIndicator.style.transform = `translateX(${index * 100}%)`;
+
+                    // Show corresponding content
+                    const tabId = this.getAttribute('data-tab');
+                    tabContents.forEach(content => {
+                        content.classList.add('hidden');
+                    });
+                    document.getElementById(`${tabId}-content`).classList.remove('hidden');
+                });
+            });
+
+            // Lab tab functionality
+            const earthRotationBtn = document.getElementById('earthRotationBtn');
+            const moonPhasesBtn = document.getElementById('moonPhasesBtn');
+            const earthRotationLab = document.getElementById('earthRotationLab');
+            const moonPhasesLab = document.getElementById('moonPhasesLab');
+
+            earthRotationBtn.addEventListener('click', function () {
+                earthRotationLab.classList.remove('hidden');
+                moonPhasesLab.classList.add('hidden');
+                earthRotationBtn.classList.add('text-purple-700', 'border-purple-700');
+                earthRotationBtn.classList.remove('text-gray-500', 'border-transparent');
+                moonPhasesBtn.classList.remove('text-purple-700', 'border-purple-700');
+                moonPhasesBtn.classList.add('text-gray-500', 'border-transparent');
+            });
+
+            moonPhasesBtn.addEventListener('click', function () {
+                earthRotationLab.classList.add('hidden');
+                moonPhasesLab.classList.remove('hidden');
+                earthRotationBtn.classList.remove('text-purple-700', 'border-purple-700');
+                earthRotationBtn.classList.add('text-gray-500', 'border-transparent');
+                moonPhasesBtn.classList.add('text-purple-700', 'border-purple-700');
+                moonPhasesBtn.classList.remove('text-gray-500', 'border-transparent');
+            });
+
+            // Earth rotation controls
+            const playBtn = document.getElementById('playBtn');
+            const pauseBtn = document.getElementById('pauseBtn');
+            const resetRotationBtn = document.getElementById('resetRotationBtn');
+            const earth = document.getElementById('earth');
+            const speedSlider = document.getElementById('speed');
+
+            playBtn.addEventListener('click', function () {
+                earth.classList.remove('earth-rotate-paused');
+            });
+
+            pauseBtn.addEventListener('click', function () {
+                earth.classList.add('earth-rotate-paused');
+            });
+
+            resetRotationBtn.addEventListener('click', function () {
+                // Reset rotation by removing and re-adding the class
+                earth.classList.remove('earth-rotate');
+                setTimeout(() => {
+                    earth.classList.add('earth-rotate');
+                }, 10);
+            });
+
+            speedSlider.addEventListener('input', function () {
+                const speed = 30 - (this.value * 2); // Invert so higher value = faster
+                earth.style.animationDuration = `${speed}s`;
+            });
+
+            // Moon phase selection
+            const moonPositions = document.querySelectorAll('.moon-position');
+            const moonPhaseDisplay = document.getElementById('moonPhaseDisplay');
+            const moonShadow = document.getElementById('moonShadow');
+            const moonPhaseName = document.getElementById('moonPhaseName');
+            const moonPhaseDate = document.getElementById('moonPhaseDate');
+            const moonPhaseDescription = document.getElementById('moonPhaseDescription');
+
+            moonPositions.forEach(position => {
+                position.addEventListener('click', function () {
+                    const positionId = this.getAttribute('data-position');
+                    const phaseName = this.getAttribute('data-name');
+                    const phaseDesc = this.getAttribute('data-desc');
+
+                    // Update selected moon
+                    moonPositions.forEach(pos => {
+                        pos.querySelector('div').classList.remove('border-yellow-300', 'moon-fade');
+                        pos.querySelector('div').classList.add('border-gray-500');
+                    });
+                    this.querySelector('div').classList.remove('border-gray-500');
+                    this.querySelector('div').classList.add('border-yellow-300', 'moon-fade');
+
+                    // Update moon phase display
+                    moonPhaseName.textContent = phaseName;
+                    moonPhaseDescription.textContent = phaseDesc;
+
+                    // Update moon phase visualization based on position
+                    switch (positionId) {
+                        case '1': // New Moon
+                            moonShadow.style.width = '100%';
+                            moonShadow.style.borderRadius = '0';
+                            moonPhaseDate.textContent = 'แรม 15 ค่ำ / ขึ้น 1 ค่ำ';
+                            break;
+                        case '2': // Waxing Crescent
+                            moonShadow.style.width = '75%';
+                            moonShadow.style.borderRadius = '0';
+                            moonShadow.style.left = '0';
+                            moonPhaseDate.textContent = 'ขึ้น 3-5 ค่ำ';
+                            break;
+                        case '3': // First Quarter
+                            moonShadow.style.width = '50%';
+                            moonShadow.style.borderRadius = '0';
+                            moonShadow.style.left = '0';
+                            moonPhaseDate.textContent = 'ขึ้น 7-8 ค่ำ';
+                            break;
+                        case '4': // Waxing Gibbous
+                            moonShadow.style.width = '25%';
+                            moonShadow.style.borderRadius = '0';
+                            moonShadow.style.left = '0';
+                            moonPhaseDate.textContent = 'ขึ้น 10-13 ค่ำ';
+                            break;
+                        case '5': // Full Moon
+                            moonShadow.style.width = '0%';
+                            moonPhaseDate.textContent = 'ขึ้น 15 ค่ำ';
+                            break;
+                        case '6': // Waning Gibbous
+                            moonShadow.style.width = '25%';
+                            moonShadow.style.borderRadius = '0';
+                            moonShadow.style.left = '75%';
+                            moonPhaseDate.textContent = 'แรม 3-5 ค่ำ';
+                            break;
+                        case '7': // Last Quarter
+                            moonShadow.style.width = '50%';
+                            moonShadow.style.borderRadius = '0';
+                            moonShadow.style.left = '50%';
+                            moonPhaseDate.textContent = 'แรม 7-8 ค่ำ';
+                            break;
+                        case '8': // Waning Crescent
+                            moonShadow.style.width = '75%';
+                            moonShadow.style.borderRadius = '0';
+                            moonShadow.style.left = '25%';
+                            moonPhaseDate.textContent = 'แรม 11-13 ค่ำ';
+                            break;
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+
+</html>

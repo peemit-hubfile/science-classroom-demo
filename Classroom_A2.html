@@ -1,0 +1,927 @@
+<!DOCTYPE html>
+
+<html lang="th">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Smart Science Classroom - บทเรียนและการทดลอง</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&amp;display=swap"
+        rel="stylesheet" />
+    <style>
+        * {
+            font-family: 'Prompt', sans-serif;
+        }
+
+        /* School color scheme */
+        :root {
+            --primary: #1e40af;
+            /* Deep blue */
+            --secondary: #be123c;
+            /* Deep red */
+            --accent: #ca8a04;
+            /* Gold */
+            --light: #f8fafc;
+            /* Light background */
+            --dark: #1e293b;
+            /* Dark text */
+        }
+
+        body {
+            background-color: #f1f5f9;
+        }
+
+        /* Button animations */
+        .btn {
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s ease;
+            transform: translateZ(0);
+        }
+
+        .btn:before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.2);
+            transition: all 0.4s ease-in-out;
+            z-index: 1;
+        }
+
+        .btn:hover:before {
+            left: 100%;
+        }
+
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .btn:active {
+            transform: translateY(-1px);
+            box-shadow: 0 5px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .btn-content {
+            position: relative;
+            z-index: 2;
+        }
+
+        /* Card animations */
+        .card {
+            transition: all 0.3s ease;
+            transform: translateZ(0);
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Mobile menu animation */
+        .mobile-menu {
+            transition: transform 0.3s ease-in-out;
+            transform: translateX(-100%);
+        }
+
+        .mobile-menu.open {
+            transform: translateX(0);
+        }
+
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #f1f5f9;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #94a3b8;
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #64748b;
+        }
+
+        /* Circuit animation */
+        .wire {
+            stroke-dasharray: 1000;
+            stroke-dashoffset: 1000;
+            animation: draw 2s linear forwards;
+        }
+
+        @keyframes draw {
+            to {
+                stroke-dashoffset: 0;
+            }
+        }
+
+        .bulb-glow {
+            animation: glow 1.5s ease-in-out infinite alternate;
+        }
+
+        @keyframes glow {
+            from {
+                box-shadow: 0 0 5px #fff, 0 0 10px #fff, 0 0 15px #ffdd00, 0 0 20px #ffdd00;
+                background-color: #ffdd00;
+            }
+
+            to {
+                box-shadow: 0 0 10px #fff, 0 0 20px #fff, 0 0 30px #ffdd00, 0 0 40px #ffdd00;
+                background-color: #ffee55;
+            }
+        }
+
+        /* Earth rotation animation */
+        .earth-rotate {
+            animation: rotate 20s linear infinite;
+        }
+
+        @keyframes rotate {
+            from {
+                transform: rotate(0deg);
+            }
+
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        /* Tab animation */
+        .tab-slide {
+            transition: all 0.3s ease;
+        }
+
+        .tab-indicator {
+            transition: transform 0.3s ease;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Mobile Menu (hidden by default) -->
+    <div class="mobile-menu fixed top-0 left-0 h-full w-64 bg-blue-900 z-50 shadow-lg" id="mobileMenu">
+        <div class="p-4">
+            <div class="flex justify-between items-center mb-6">
+                <h2 class="text-white text-xl font-bold">เมนู</h2>
+                <button class="text-white" id="closeMenu">
+                    <svg class="h-6 w-6" fill="none" stroke="currentColor" viewbox="0 0 24 24"
+                        xmlns="http://www.w3.org/2000/svg">
+                        <path d="M6 18L18 6M6 6l12 12" stroke-linecap="round" stroke-linejoin="round" stroke-width="2">
+                        </path>
+                    </svg>
+                </button>
+            </div>
+            <nav>
+                <ul class="space-y-2">
+                    <li>
+                        <a class="block py-2 px-4 text-white hover:bg-blue-800 rounded" href="index.html">หน้าหลัก</a>
+                    </li>
+                    <li>
+                        <a class="block py-2 px-4 text-white hover:bg-blue-800 rounded"
+                            href="Classroom-ChackIn.html">เช็กชื่อเข้าเรียน</a>
+                    </li>
+                    <li>
+                        <a class="block py-2 px-4 text-white bg-blue-800 rounded"
+                            href="Classroom_A1.html">บทเรียนและการทดลอง</a>
+                    </li>
+                    <li>
+                        <a class="block py-2 px-4 text-white hover:bg-blue-800 rounded"
+                            href="Dashboard.html">แดชบอร์ดครู</a>
+                    </li>
+                    <li>
+                        <a class="block py-2 px-4 text-white hover:bg-blue-800 rounded" href="#">เกี่ยวกับเรา</a>
+                    </li>
+                    <li>
+                        <a class="block py-2 px-4 text-white hover:bg-blue-800 rounded" href="#">ติดต่อ</a>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+    </div>
+    <!-- Overlay for mobile menu -->
+    <div class="fixed inset-0 bg-black opacity-50 z-40 hidden" id="overlay"></div>
+    <!-- Main Container -->
+    <div class="min-h-screen flex flex-col">
+        <!-- Header -->
+        <header class="bg-blue-900 text-white shadow-md">
+            <div class="container mx-auto px-4">
+                <div class="flex justify-between items-center py-4">
+                    <!-- Logo and Title -->
+                    <div class="flex items-center">
+                        <button class="mr-4 md:hidden" id="menuButton">
+                            <svg class="h-6 w-6" fill="none" stroke="currentColor" viewbox="0 0 24 24"
+                                xmlns="http://www.w3.org/2000/svg">
+                                <path d="M4 6h16M4 12h16M4 18h16" stroke-linecap="round" stroke-linejoin="round"
+                                    stroke-width="2"></path>
+                            </svg>
+                        </button>
+                        <div class="flex items-center">
+                            <svg class="h-8 w-8 mr-2" fill="currentColor" viewbox="0 0 20 20"
+                                xmlns="http://www.w3.org/2000/svg">
+                                <path
+                                    d="M10.394 2.08a1 1 0 00-.788 0l-7 3a1 1 0 000 1.84L5.25 8.051a.999.999 0 01.356-.257l4-1.714a1 1 0 11.788 1.838L7.667 9.088l1.94.831a1 1 0 00.787 0l7-3a1 1 0 000-1.838l-7-3zM3.31 9.397L5 10.12v4.102a8.969 8.969 0 00-1.05-.174 1 1 0 01-.89-.89 11.115 11.115 0 01.25-3.762zM9.3 16.573A9.026 9.026 0 007 14.935v-3.957l1.818.78a3 3 0 002.364 0l5.508-2.361a11.026 11.026 0 01.25 3.762 1 1 0 01-.89.89 8.968 8.968 0 00-5.35 2.524 1 1 0 01-1.4 0zM6 18a1 1 0 001-1v-2.065a8.935 8.935 0 00-2-.712V17a1 1 0 001 1z">
+                                </path>
+                            </svg>
+                            <div>
+                                <h1 class="text-xl font-bold">Smart Science Classroom</h1>
+                                <p class="text-sm text-blue-200">ห้องเรียนคุณครูสุวรรณา</p>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Lesson Info -->
+                    <div class="hidden md:flex items-center">
+                        <span class="bg-blue-800 text-white text-sm px-3 py-1 rounded-full">ป.5 - ไฟฟ้า:
+                            ต่อวงจรให้ไฟติด</span>
+                    </div>
+                    <!-- Desktop Navigation -->
+                    <nav class="hidden md:block">
+                        <ul class="flex space-x-6">
+                            <li>
+                                <a class="text-white font-medium hover:text-blue-200" href="index.html">หน้าหลัก</a>
+                            </li>
+                            <li>
+                                <a class="text-white font-medium hover:text-blue-200"
+                                    href="Classroom-ChackIn.html">เช็กชื่อเข้าเรียน</a>
+                            </li>
+                            <li>
+                                <a class="text-white font-medium border-b-2 border-white pb-1"
+                                    href="Classroom_A1.html">บทเรียน</a>
+                            </li>
+                            <li>
+                                <a class="text-white font-medium hover:text-blue-200"
+                                    href="Dashboard.html">แดชบอร์ด</a>
+                            </li>
+                        </ul>
+                    </nav>
+                </div>
+            </div>
+        </header>
+        <!-- Main Content -->
+        <main class="flex-grow container mx-auto px-4 py-6">
+            <!-- View Toggle Buttons (for demo purposes) -->
+            <div class="mb-6 flex justify-center">
+                <div class="bg-white rounded-lg shadow-md p-1 inline-flex">
+                    <button class="btn px-4 py-2 rounded-lg bg-blue-700 text-white font-medium" id="teacherViewBtn">
+                        <span class="btn-content">มุมมองครู</span>
+                    </button>
+                    <button class="btn px-4 py-2 rounded-lg text-gray-700 font-medium" id="studentViewBtn">
+                        <span class="btn-content">มุมมองนักเรียน</span>
+                    </button>
+                </div>
+            </div>
+            <!-- Teacher Control Bar (visible only in teacher view) -->
+            <div class="card bg-white rounded-lg shadow-md overflow-hidden mb-6" id="teacherControlBar">
+                <div class="bg-blue-700 h-2"></div>
+                <div class="p-4">
+                    <div class="flex flex-wrap items-center justify-between">
+                        <div class="flex flex-wrap items-center gap-4 mb-2 md:mb-0">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1"
+                                    for="currentStage">ขั้นตอนปัจจุบัน:</label>
+                                <select
+                                    class="border border-gray-300 rounded-md py-1 px-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                    id="currentStage">
+                                    <option>Pre-test</option>
+                                    <option selected="">Mini Lab</option>
+                                    <option>Post-test</option>
+                                    <option>Exit Ticket</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1"
+                                    for="activityStatus">สถานะกิจกรรม:</label>
+                                <div class="flex items-center">
+                                    <span class="relative inline-block w-10 mr-2 align-middle select-none">
+                                        <input checked=""
+                                            class="toggle-checkbox absolute block w-6 h-6 rounded-full bg-white border-4 border-gray-300 appearance-none cursor-pointer transition-transform duration-200 ease-in-out translate-x-full"
+                                            id="activityStatus" type="checkbox" />
+                                        <label
+                                            class="toggle-label block overflow-hidden h-6 rounded-full bg-green-500 cursor-pointer"
+                                            for="activityStatus"></label>
+                                    </span>
+                                    <span class="text-sm text-green-600 font-medium" id="statusText">เปิดใช้งาน</span>
+                                </div>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1"
+                                    for="lessonSelect">บทเรียน:</label>
+                                <select
+                                    class="border border-gray-300 rounded-md py-1 px-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                    id="lessonSelect">
+                                    <option selected="">ไฟฟ้า: ต่อวงจรให้ไฟติด</option>
+                                    <option>ระบบสุริยะ: การหมุนโลก / เฟสดวงจันทร์</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="flex space-x-2 mt-4 md:mt-0">
+                            <button class="btn bg-blue-700 hover:bg-blue-800 text-white font-bold py-2 px-4 rounded"
+                                id="nextStageBtn">
+                                <span class="btn-content flex items-center">
+                                    <svg class="h-5 w-5 mr-1" fill="currentColor" viewbox="0 0 20 20"
+                                        xmlns="http://www.w3.org/2000/svg">
+                                        <path clip-rule="evenodd"
+                                            d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z"
+                                            fill-rule="evenodd"></path>
+                                    </svg>
+                                    ไปขั้นตอนถัดไป
+                                </span>
+                            </button>
+                            <button class="btn bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded"
+                                id="resetBtn">
+                                <span class="btn-content flex items-center">
+                                    <svg class="h-5 w-5 mr-1" fill="currentColor" viewbox="0 0 20 20"
+                                        xmlns="http://www.w3.org/2000/svg">
+                                        <path clip-rule="evenodd"
+                                            d="M4 2a1 1 0 011 1v2.101a7.002 7.002 0 0111.601 2.566 1 1 0 11-1.885.666A5.002 5.002 0 005.999 7H9a1 1 0 010 2H4a1 1 0 01-1-1V3a1 1 0 011-1zm.008 9.057a1 1 0 011.276.61A5.002 5.002 0 0014.001 13H11a1 1 0 110-2h5a1 1 0 011 1v5a1 1 0 11-2 0v-2.101a7.002 7.002 0 01-11.601-2.566 1 1 0 01.61-1.276z"
+                                            fill-rule="evenodd"></path>
+                                    </svg>
+                                    รีเซ็ตข้อมูล
+                                </span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Lesson Content Container -->
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <!-- Main Content Area (2/3 width on large screens) -->
+                <div class="lg:col-span-2">
+                    <!-- Lesson Stage Tabs -->
+                    <div class="bg-white rounded-t-lg shadow-md relative">
+                        <div class="flex border-b relative">
+                            <button class="tab-btn py-3 px-6 text-sm font-medium text-gray-500 relative"
+                                data-tab="pretest">
+                                Pre-test
+                            </button>
+                            <button class="tab-btn py-3 px-6 text-sm font-medium text-blue-700 relative active"
+                                data-tab="minilab">
+                                Mini Lab
+                            </button>
+                            <button class="tab-btn py-3 px-6 text-sm font-medium text-gray-500 relative"
+                                data-tab="posttest">
+                                Post-test
+                            </button>
+                            <button class="tab-btn py-3 px-6 text-sm font-medium text-gray-500 relative"
+                                data-tab="exitticket">
+                                Exit Ticket
+                            </button>
+                            <div class="tab-indicator absolute bottom-0 left-0 h-0.5 bg-blue-700 transition-all duration-300"
+                                style="width: 25%; transform: translateX(100%);"></div>
+                        </div>
+                    </div>
+                    <!-- Tab Content -->
+                    <div class="bg-white rounded-b-lg shadow-md overflow-hidden">
+                        <!-- Mini Lab Content - Electricity Circuit -->
+                        <div class="tab-content p-6" id="minilab-content">
+                            <div class="flex justify-between items-center mb-4">
+                                <h2 class="text-xl font-bold text-blue-900">Mini Lab: ต่อวงจรไฟฟ้า</h2>
+                                <div class="flex space-x-2">
+                                    <button
+                                        class="btn bg-yellow-500 hover:bg-yellow-600 text-white font-bold py-1 px-3 rounded-full text-sm"
+                                        id="helpBtn">
+                                        <span class="btn-content flex items-center">
+                                            <svg class="h-4 w-4 mr-1" fill="currentColor" viewbox="0 0 20 20"
+                                                xmlns="http://www.w3.org/2000/svg">
+                                                <path clip-rule="evenodd"
+                                                    d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-8-3a1 1 0 00-.867.5 1 1 0 11-1.731-1A3 3 0 0113 8a3.001 3.001 0 01-2 2.83V11a1 1 0 11-2 0v-1a1 1 0 011-1 1 1 0 100-2zm0 8a1 1 0 100-2 1 1 0 000 2z"
+                                                    fill-rule="evenodd"></path>
+                                            </svg>
+                                            ช่วยเหลือ
+                                        </span>
+                                    </button>
+                                    <button
+                                        class="btn bg-gray-500 hover:bg-gray-600 text-white font-bold py-1 px-3 rounded-full text-sm"
+                                        id="resetLabBtn">
+                                        <span class="btn-content flex items-center">
+                                            <svg class="h-4 w-4 mr-1" fill="currentColor" viewbox="0 0 20 20"
+                                                xmlns="http://www.w3.org/2000/svg">
+                                                <path clip-rule="evenodd"
+                                                    d="M4 2a1 1 0 011 1v2.101a7.002 7.002 0 0111.601 2.566 1 1 0 11-1.885.666A5.002 5.002 0 005.999 7H9a1 1 0 010 2H4a1 1 0 01-1-1V3a1 1 0 011-1zm.008 9.057a1 1 0 011.276.61A5.002 5.002 0 0014.001 13H11a1 1 0 110-2h5a1 1 0 011 1v5a1 1 0 11-2 0v-2.101a7.002 7.002 0 01-11.601-2.566 1 1 0 01.61-1.276z"
+                                                    fill-rule="evenodd"></path>
+                                            </svg>
+                                            เริ่มใหม่
+                                        </span>
+                                    </button>
+                                </div>
+                            </div>
+                            <p class="mb-6 text-gray-600">ต่อวงจรไฟฟ้าให้ครบวงจรเพื่อให้หลอดไฟติด
+                                โดยเลือกจุดเชื่อมต่อสายไฟจากจุดหนึ่งไปยังอีกจุดหนึ่ง
+                                แล้วเปิดสวิตช์เพื่อให้กระแสไฟฟ้าไหลผ่าน</p>
+                            <!-- Circuit Diagram -->
+                            <div class="card bg-gray-100 p-6 rounded-lg mb-6 relative" style="height: 320px;">
+                                <!-- Battery -->
+                                <div
+                                    class="absolute top-1/2 left-16 transform -translate-y-1/2 bg-yellow-100 border-2 border-yellow-400 rounded-lg p-2 w-20 h-28 flex flex-col justify-center items-center shadow-md">
+                                    <div class="text-xs font-bold mb-1">แบตเตอรี่</div>
+                                    <div class="w-full h-1/2 flex flex-col justify-between">
+                                        <div class="h-2 w-full bg-red-500 rounded-t"></div>
+                                        <div class="h-2 w-full bg-blue-500 rounded-b"></div>
+                                    </div>
+                                    <!-- Connection Points -->
+                                    <div class="absolute -right-3 top-1/4 w-6 h-6 bg-red-500 rounded-full border-2 border-gray-700 cursor-pointer shadow-md hover:shadow-lg transform hover:scale-110 transition-all"
+                                        data-point="battery-plus" id="battery-plus"></div>
+                                    <div class="absolute -right-3 bottom-1/4 w-6 h-6 bg-blue-500 rounded-full border-2 border-gray-700 cursor-pointer shadow-md hover:shadow-lg transform hover:scale-110 transition-all"
+                                        data-point="battery-minus" id="battery-minus"></div>
+                                </div>
+                                <!-- Switch -->
+                                <div
+                                    class="absolute top-1/4 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-gray-200 border-2 border-gray-400 rounded-lg p-2 w-28 h-20 flex flex-col justify-center items-center shadow-md">
+                                    <div class="text-xs font-bold mb-1">สวิตช์</div>
+                                    <div class="relative w-full h-6 bg-gray-300 rounded-full p-1">
+                                        <div class="absolute left-0 top-0 w-1/2 h-full bg-gray-600 rounded-full transition-all duration-300 transform translate-x-0 cursor-pointer"
+                                            id="switch-lever"></div>
+                                    </div>
+                                    <!-- Connection Points -->
+                                    <div class="absolute -left-3 top-1/2 w-6 h-6 bg-gray-500 rounded-full border-2 border-gray-700 cursor-pointer shadow-md hover:shadow-lg transform hover:scale-110 transition-all"
+                                        data-point="switch-in" id="switch-in"></div>
+                                    <div class="absolute -right-3 top-1/2 w-6 h-6 bg-gray-500 rounded-full border-2 border-gray-700 cursor-pointer shadow-md hover:shadow-lg transform hover:scale-110 transition-all"
+                                        data-point="switch-out" id="switch-out"></div>
+                                </div>
+                                <!-- Light Bulb -->
+                                <div
+                                    class="absolute top-1/4 right-16 transform -translate-y-1/2 bg-gray-200 border-2 border-gray-400 rounded-full p-2 w-24 h-24 flex flex-col justify-center items-center shadow-md">
+                                    <div class="text-xs font-bold mb-1">หลอดไฟ</div>
+                                    <div class="w-12 h-12 rounded-full bg-gray-300 transition-all duration-500"
+                                        id="bulb"></div>
+                                    <!-- Connection Points -->
+                                    <div class="absolute -left-3 top-1/2 w-6 h-6 bg-gray-500 rounded-full border-2 border-gray-700 cursor-pointer shadow-md hover:shadow-lg transform hover:scale-110 transition-all"
+                                        data-point="bulb-in" id="bulb-in"></div>
+                                    <div class="absolute -bottom-3 left-1/2 w-6 h-6 bg-gray-500 rounded-full border-2 border-gray-700 cursor-pointer shadow-md hover:shadow-lg transform hover:scale-110 transition-all transform -translate-x-1/2"
+                                        data-point="bulb-out" id="bulb-out"></div>
+                                </div>
+                                <!-- Wires (will be drawn based on connections) -->
+                                <svg class="absolute top-0 left-0 w-full h-full pointer-events-none" id="wires">
+                                    <!-- Wires will be added dynamically -->
+                                </svg>
+                            </div>
+                            <!-- Controls -->
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                                <div class="card bg-white rounded-lg shadow-md overflow-hidden">
+                                    <div class="bg-blue-700 h-2"></div>
+                                    <div class="p-4">
+                                        <h3 class="text-lg font-semibold text-blue-900 mb-3">การเชื่อมต่อ</h3>
+                                        <div class="bg-gray-50 p-4 rounded-lg">
+                                            <div class="text-sm mb-3">เลือกจุดเชื่อมต่อ:</div>
+                                            <div class="grid grid-cols-2 gap-2 mb-4">
+                                                <div class="flex flex-col">
+                                                    <label class="block text-xs font-medium text-gray-700 mb-1"
+                                                        for="startPoint">จุดต้นทาง:</label>
+                                                    <select
+                                                        class="border border-gray-300 rounded-md py-2 px-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                                        id="startPoint">
+                                                        <option value="">-- เลือกจุดต้นทาง --</option>
+                                                        <option value="battery-plus">แบตเตอรี่ (+)</option>
+                                                        <option value="battery-minus">แบตเตอรี่ (-)</option>
+                                                        <option value="switch-in">สวิตช์ (เข้า)</option>
+                                                        <option value="switch-out">สวิตช์ (ออก)</option>
+                                                        <option value="bulb-in">หลอดไฟ (เข้า)</option>
+                                                        <option value="bulb-out">หลอดไฟ (ออก)</option>
+                                                    </select>
+                                                </div>
+                                                <div class="flex flex-col">
+                                                    <label class="block text-xs font-medium text-gray-700 mb-1"
+                                                        for="endPoint">จุดปลายทาง:</label>
+                                                    <select
+                                                        class="border border-gray-300 rounded-md py-2 px-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparentfocus:border-transparent"
+                                                        id="endPoint">
+                                                        <option value="">-- เลือกจุดปลายทาง --</option>
+                                                        <option value="battery-plus">แบตเตอรี่ (+)</option>
+                                                        <option value="battery-minus">แบตเตอรี่ (-)</option>
+                                                        <option value="switch-in">สวิตช์ (เข้า)</option>
+                                                        <option value="switch-out">สวิตช์ (ออก)</option>
+                                                        <option value="bulb-in">หลอดไฟ (เข้า)</option>
+                                                        <option value="bulb-out">หลอดไฟ (ออก)</option>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            <button
+                                                class="btn bg-blue-700 hover:bg-blue-800 text-white font-bold py-2 px-4 rounded w-full"
+                                                id="addWireBtn">
+                                                <span class="btn-content flex items-center justify-center">
+                                                    <svg class="h-5 w-5 mr-1" fill="currentColor" viewbox="0 0 20 20"
+                                                        xmlns="http://www.w3.org/2000/svg">
+                                                        <path clip-rule="evenodd"
+                                                            d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z"
+                                                            fill-rule="evenodd"></path>
+                                                    </svg>
+                                                    เพิ่มสายไฟ
+                                                </span>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="card bg-white rounded-lg shadow-md overflow-hidden">
+                                    <div class="bg-blue-700 h-2"></div>
+                                    <div class="p-4">
+                                        <h3 class="text-lg font-semibold text-blue-900 mb-3">สายไฟที่เชื่อมต่อแล้ว</h3>
+                                        <div class="bg-gray-50 p-4 rounded-lg h-40 overflow-y-auto">
+                                            <ul class="text-sm space-y-2" id="wiresList">
+                                                <li
+                                                    class="py-2 px-3 bg-blue-50 rounded flex justify-between items-center">
+                                                    <span>แบตเตอรี่ (+) → สวิตช์ (เข้า)</span>
+                                                    <button class="text-red-600 hover:text-red-800">
+                                                        <svg class="h-4 w-4" fill="currentColor" viewbox="0 0 20 20"
+                                                            xmlns="http://www.w3.org/2000/svg">
+                                                            <path clip-rule="evenodd"
+                                                                d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                                                                fill-rule="evenodd"></path>
+                                                        </svg>
+                                                    </button>
+                                                </li>
+                                                <li
+                                                    class="py-2 px-3 bg-blue-50 rounded flex justify-between items-center">
+                                                    <span>สวิตช์ (ออก) → หลอดไฟ (เข้า)</span>
+                                                    <button class="text-red-600 hover:text-red-800">
+                                                        <svg class="h-4 w-4" fill="currentColor" viewbox="0 0 20 20"
+                                                            xmlns="http://www.w3.org/2000/svg">
+                                                            <path clip-rule="evenodd"
+                                                                d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                                                                fill-rule="evenodd"></path>
+                                                        </svg>
+                                                    </button>
+                                                </li>
+                                                <li
+                                                    class="py-2 px-3 bg-blue-50 rounded flex justify-between items-center">
+                                                    <span>หลอดไฟ (ออก) → แบตเตอรี่ (-)</span>
+                                                    <button class="text-red-600 hover:text-red-800">
+                                                        <svg class="h-4 w-4" fill="currentColor" viewbox="0 0 20 20"
+                                                            xmlns="http://www.w3.org/2000/svg">
+                                                            <path clip-rule="evenodd"
+                                                                d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                                                                fill-rule="evenodd"></path>
+                                                        </svg>
+                                                    </button>
+                                                </li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- Switch Control -->
+                            <div class="card bg-white rounded-lg shadow-md overflow-hidden mb-6">
+                                <div class="bg-blue-700 h-2"></div>
+                                <div class="p-4">
+                                    <h3 class="text-lg font-semibold text-blue-900 mb-3">ควบคุมสวิตช์</h3>
+                                    <div class="flex items-center justify-center bg-gray-50 p-4 rounded-lg">
+                                        <span class="mr-4 font-medium">ปิด</span>
+                                        <label class="relative inline-flex items-center cursor-pointer">
+                                            <input class="sr-only peer" id="switchToggle" type="checkbox" />
+                                            <div
+                                                class="w-14 h-7 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-6 after:w-6 after:transition-all peer-checked:bg-blue-600">
+                                            </div>
+                                        </label>
+                                        <span class="ml-4 font-medium">เปิด</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- Feedback Area -->
+                            <div class="bg-yellow-50 border-l-4 border-yellow-500 p-4 rounded" id="feedbackArea">
+                                <div class="flex">
+                                    <div class="flex-shrink-0">
+                                        <svg class="h-5 w-5 text-yellow-500" fill="currentColor" viewbox="0 0 20 20"
+                                            xmlns="http://www.w3.org/2000/svg">
+                                            <path clip-rule="evenodd"
+                                                d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z"
+                                                fill-rule="evenodd"></path>
+                                        </svg>
+                                    </div>
+                                    <div class="ml-3">
+                                        <p class="text-sm text-yellow-700" id="feedbackText">
+                                            วงจรครบแล้ว แต่สวิตช์ยังปิดอยู่ ลองเปิดสวิตช์ดูสิ!
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Pre-test Content (hidden by default) -->
+                        <div class="tab-content p-6 hidden" id="pretest-content">
+                            <h2 class="text-xl font-bold text-blue-900 mb-4">แบบทดสอบก่อนเรียน</h2>
+                            <p class="mb-6 text-gray-600">ทำแบบทดสอบก่อนเรียนเพื่อวัดความรู้พื้นฐานเกี่ยวกับวงจรไฟฟ้า
+                            </p>
+                            <!-- Pre-test content would go here -->
+                        </div>
+                        <!-- Post-test Content (hidden by default) -->
+                        <div class="tab-content p-6 hidden" id="posttest-content">
+                            <h2 class="text-xl font-bold text-blue-900 mb-4">แบบทดสอบหลังเรียน</h2>
+                            <p class="mb-6 text-gray-600">ทำแบบทดสอบหลังเรียนเพื่อวัดความเข้าใจเกี่ยวกับวงจรไฟฟ้า</p>
+                            <!-- Post-test content would go here -->
+                        </div>
+                        <!-- Exit Ticket Content (hidden by default) -->
+                        <div class="tab-content p-6 hidden" id="exitticket-content">
+                            <h2 class="text-xl font-bold text-blue-900 mb-4">Exit Ticket</h2>
+                            <p class="mb-6 text-gray-600">แสดงความคิดเห็นเกี่ยวกับบทเรียนและสิ่งที่ได้เรียนรู้</p>
+                            <!-- Exit ticket content would go here -->
+                        </div>
+                    </div>
+                </div>
+                <!-- Teacher Dashboard (1/3 width on large screens, visible only in teacher view) -->
+                <div class="card bg-white rounded-lg shadow-md overflow-hidden" id="teacherDashboard">
+                    <div class="bg-blue-700 h-2"></div>
+                    <div class="p-4">
+                        <h2 class="text-lg font-bold text-blue-900 mb-4">แดชบอร์ดครู</h2>
+                        <!-- Class Stats -->
+                        <div class="mb-6">
+                            <h3 class="text-md font-semibold mb-2 border-b border-gray-200 pb-1">ข้อมูลคาบเรียน</h3>
+                            <div class="grid grid-cols-2 gap-2 text-sm">
+                                <div class="bg-blue-50 p-3 rounded-lg">
+                                    <div class="text-gray-600 text-xs">นักเรียนเช็กชื่อแล้ว</div>
+                                    <div class="text-xl font-bold text-blue-700">25/30</div>
+                                </div>
+                                <div class="bg-green-50 p-3 rounded-lg">
+                                    <div class="text-gray-600 text-xs">คะแนนเฉลี่ย Pre-test</div>
+                                    <div class="text-xl font-bold text-green-700">68%</div>
+                                </div>
+                                <div class="bg-purple-50 p-3 rounded-lg">
+                                    <div class="text-gray-600 text-xs">ทำ Lab สำเร็จ</div>
+                                    <div class="text-xl font-bold text-purple-700">18/25</div>
+                                </div>
+                                <div class="bg-yellow-50 p-3 rounded-lg">
+                                    <div class="text-gray-600 text-xs">คะแนนเฉลี่ย Post-test</div>
+                                    <div class="text-xl font-bold text-yellow-700">-</div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Problematic Questions -->
+                        <div class="mb-6">
+                            <h3 class="text-md font-semibold mb-2 border-b border-gray-200 pb-1">
+                                คำถามที่นักเรียนตอบผิดมาก</h3>
+                            <div class="text-sm space-y-2">
+                                <div class="bg-red-50 p-3 rounded-lg">
+                                    <div class="font-medium text-red-800 text-xs">ข้อ 2:
+                                        อุปกรณ์ใดไม่จำเป็นในวงจรไฟฟ้าอย่างง่าย</div>
+                                    <div class="text-red-600 text-xs">ตอบผิด 65%</div>
+                                </div>
+                                <div class="bg-red-50 p-3 rounded-lg">
+                                    <div class="font-medium text-red-800 text-xs">ข้อ 4: สวิตช์ทำหน้าที่อะไรในวงจร</div>
+                                    <div class="text-red-600 text-xs">ตอบผิด 42%</div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Students Needing Review -->
+                        <div class="mb-6">
+                            <h3 class="text-md font-semibold mb-2 border-b border-gray-200 pb-1">นักเรียนที่ควรทบทวน
+                            </h3>
+                            <div class="text-sm max-h-32 overflow-y-auto">
+                                <div class="flex justify-between items-center py-1 border-b border-gray-100">
+                                    <span class="text-xs">เด็กชายภูมิ รักษ์ธรรม</span>
+                                    <span class="text-red-600 text-xs">35%</span>
+                                </div>
+                                <div class="flex justify-between items-center py-1 border-b border-gray-100">
+                                    <span class="text-xs">เด็กหญิงกัญญา วงศ์สุข</span>
+                                    <span class="text-red-600 text-xs">40%</span>
+                                </div>
+                                <div class="flex justify-between items-center py-1 border-b border-gray-100">
+                                    <span class="text-xs">เด็กชายธีรภัทร สมบัติ</span>
+                                    <span class="text-red-600 text-xs">45%</span>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Real-time Activity -->
+                        <div>
+                            <h3 class="text-md font-semibold mb-2 border-b border-gray-200 pb-1">กิจกรรมล่าสุด</h3>
+                            <div class="text-sm max-h-32 overflow-y-auto">
+                                <div class="py-1 border-b border-gray-100">
+                                    <div class="font-medium text-xs">เด็กหญิงนภัสสร วงศ์สุวรรณ</div>
+                                    <div class="text-gray-600 text-xs">ต่อวงจรสำเร็จ</div>
+                                </div>
+                                <div class="py-1 border-b border-gray-100">
+                                    <div class="font-medium text-xs">เด็กชายธนกร สมบูรณ์</div>
+                                    <div class="text-gray-600 text-xs">กำลังต่อวงจร</div>
+                                </div>
+                                <div class="py-1 border-b border-gray-100">
+                                    <div class="font-medium text-xs">เด็กหญิงพิมพ์มาดา จันทร์เพ็ญ</div>
+                                    <div class="text-gray-600 text-xs">ต่อวงจรสำเร็จ</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+        <!-- Footer -->
+        <footer class="bg-blue-900 text-white py-6 mt-auto">
+            <div class="container mx-auto px-4">
+                <div class="flex flex-col md:flex-row justify-between items-center">
+                    <div class="mb-4 md:mb-0">
+                        <h3 class="text-lg font-bold mb-2">Smart Science Classroom</h3>
+                        <p class="text-sm text-blue-200">ห้องเรียนคุณครูสุวรรณา</p>
+                    </div>
+                    <div class="text-center md:text-right">
+                        <p class="text-sm mb-2">© 2023 กระทรวงศึกษาธิการ</p>
+                        <p class="text-xs text-blue-200">พัฒนาโดย ทีมพัฒนาเทคโนโลยีการศึกษา</p>
+                    </div>
+                </div>
+            </div>
+        </footer>
+    </div>
+    <script>
+        // Mobile menu functionality
+        document.addEventListener('DOMContentLoaded', function () {
+            const menuButton = document.getElementById('menuButton');
+            const closeMenu = document.getElementById('closeMenu');
+            const mobileMenu = document.getElementById('mobileMenu');
+            const overlay = document.getElementById('overlay');
+
+            // Open menu
+            menuButton.addEventListener('click', function () {
+                mobileMenu.classList.add('open');
+                overlay.classList.remove('hidden');
+            });
+
+            // Close menu
+            closeMenu.addEventListener('click', function () {
+                mobileMenu.classList.remove('open');
+                overlay.classList.add('hidden');
+            });
+
+            // Close menu when clicking overlay
+            overlay.addEventListener('click', function () {
+                mobileMenu.classList.remove('open');
+                overlay.classList.add('hidden');
+            });
+
+            // Button animations
+            const buttons = document.querySelectorAll('.btn');
+            buttons.forEach(button => {
+                button.addEventListener('mouseenter', function () {
+                    this.classList.add('animate-pulse');
+                });
+                button.addEventListener('mouseleave', function () {
+                    this.classList.remove('animate-pulse');
+                });
+                button.addEventListener('click', function () {
+                    this.classList.add('scale-95');
+                    setTimeout(() => {
+                        this.classList.remove('scale-95');
+                    }, 100);
+                });
+            });
+
+            // View toggle
+            const teacherViewBtn = document.getElementById('teacherViewBtn');
+            const studentViewBtn = document.getElementById('studentViewBtn');
+            const teacherElements = document.querySelectorAll('#teacherControlBar, #teacherDashboard');
+
+            teacherViewBtn.addEventListener('click', function () {
+                teacherElements.forEach(el => el.classList.remove('hidden'));
+                teacherViewBtn.classList.add('bg-blue-700', 'text-white');
+                teacherViewBtn.classList.remove('text-gray-700');
+                studentViewBtn.classList.remove('bg-blue-700', 'text-white');
+                studentViewBtn.classList.add('text-gray-700');
+            });
+
+            studentViewBtn.addEventListener('click', function () {
+                teacherElements.forEach(el => el.classList.add('hidden'));
+                teacherViewBtn.classList.remove('bg-blue-700', 'text-white');
+                teacherViewBtn.classList.add('text-gray-700');
+                studentViewBtn.classList.add('bg-blue-700', 'text-white');
+                studentViewBtn.classList.remove('text-gray-700');
+            });
+
+            // Tab functionality
+            const tabButtons = document.querySelectorAll('.tab-btn');
+            const tabContents = document.querySelectorAll('.tab-content');
+            const tabIndicator = document.querySelector('.tab-indicator');
+
+            tabButtons.forEach((button, index) => {
+                button.addEventListener('click', function () {
+                    // Update tab buttons
+                    tabButtons.forEach(btn => {
+                        btn.classList.remove('active', 'text-blue-700');
+                        btn.classList.add('text-gray-500');
+                    });
+                    this.classList.add('active', 'text-blue-700');
+                    this.classList.remove('text-gray-500');
+
+                    // Update tab indicator
+                    tabIndicator.style.width = `${100 / tabButtons.length}%`;
+                    tabIndicator.style.transform = `translateX(${index * 100}%)`;
+
+                    // Show corresponding content
+                    const tabId = this.getAttribute('data-tab');
+                    tabContents.forEach(content => {
+                        content.classList.add('hidden');
+                    });
+                    document.getElementById(`${tabId}-content`).classList.remove('hidden');
+                });
+            });
+
+            // Switch toggle functionality
+            const switchToggle = document.getElementById('switchToggle');
+            const switchLever = document.getElementById('switch-lever');
+            const bulb = document.getElementById('bulb');
+            const feedbackText = document.getElementById('feedbackText');
+            const feedbackArea = document.getElementById('feedbackArea');
+
+            switchToggle.addEventListener('change', function () {
+                if (this.checked) {
+                    switchLever.style.transform = 'translateX(100%)';
+                    // Check if circuit is complete
+                    const isCircuitComplete = true; // This would be a function checking connections
+                    if (isCircuitComplete) {
+                        bulb.classList.add('bulb-glow');
+                        bulb.style.backgroundColor = '#ffdd00';
+                        feedbackText.textContent = 'เยี่ยมมาก! วงจรครบและสวิตช์เปิด ทำให้หลอดไฟติด';
+                        feedbackArea.classList.remove('bg-yellow-50', 'border-yellow-500');
+                        feedbackArea.classList.add('bg-green-50', 'border-green-500');
+                    }
+                } else {
+                    switchLever.style.transform = 'translateX(0)';
+                    bulb.classList.remove('bulb-glow');
+                    bulb.style.backgroundColor = '#d1d5db';
+                    feedbackText.textContent = 'วงจรครบแล้ว แต่สวิตช์ยังปิดอยู่ ลองเปิดสวิตช์ดูสิ!';
+                    feedbackArea.classList.remove('bg-green-50', 'border-green-500');
+                    feedbackArea.classList.add('bg-yellow-50', 'border-yellow-500');
+                }
+            });
+
+            // Activity status toggle
+            const activityStatus = document.getElementById('activityStatus');
+            const statusText = document.getElementById('statusText');
+
+            activityStatus.addEventListener('change', function () {
+                if (this.checked) {
+                    statusText.textContent = 'เปิดใช้งาน';
+                    statusText.classList.remove('text-red-600');
+                    statusText.classList.add('text-green-600');
+                } else {
+                    statusText.textContent = 'ปิดใช้งาน';
+                    statusText.classList.remove('text-green-600');
+                    statusText.classList.add('text-red-600');
+                }
+            });
+
+            // Connection points click functionality
+            const connectionPoints = document.querySelectorAll('[data-point]');
+            const startPointSelect = document.getElementById('startPoint');
+            const endPointSelect = document.getElementById('endPoint');
+
+            connectionPoints.forEach(point => {
+                point.addEventListener('click', function () {
+                    const pointId = this.getAttribute('data-point');
+
+                    if (!startPointSelect.value) {
+                        startPointSelect.value = pointId;
+                    } else if (!endPointSelect.value && startPointSelect.value !== pointId) {
+                        endPointSelect.value = pointId;
+                    }
+                });
+            });
+
+            // Add wire button functionality
+            const addWireBtn = document.getElementById('addWireBtn');
+            const wiresList = document.getElementById('wiresList');
+            const wiresContainer = document.getElementById('wires');
+
+            addWireBtn.addEventListener('click', function () {
+                const startPoint = startPointSelect.value;
+                const endPoint = endPointSelect.value;
+
+                if (startPoint && endPoint && startPoint !== endPoint) {
+                    // Get display names for the connection points
+                    const startPointName = startPointSelect.options[startPointSelect.selectedIndex].text;
+                    const endPointName = endPointSelect.options[endPointSelect.selectedIndex].text;
+
+                    // Add to the list
+                    const listItem = document.createElement('li');
+                    listItem.className = 'py-2 px-3 bg-blue-50 rounded flex justify-between items-center';
+                    listItem.innerHTML = `
+                        <span>${startPointName} → ${endPointName}</span>
+                        <button class="text-red-600 hover:text-red-800 remove-wire">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
+                            </svg>
+                        </button>
+                    `;
+                    wiresList.appendChild(listItem);
+
+                    // Draw the wire (simplified)
+                    const wire = document.createElementNS("http://www.w3.org/2000/svg", "path");
+                    wire.setAttribute("class", "wire");
+                    wire.setAttribute("stroke", "#3b82f6");
+                    wire.setAttribute("stroke-width", "3");
+                    wire.setAttribute("fill", "none");
+
+                    // Reset the selects
+                    startPointSelect.value = '';
+                    endPointSelect.value = '';
+
+                    // Add event listener to remove button
+                    listItem.querySelector('.remove-wire').addEventListener('click', function () {
+                        listItem.remove();
+                    });
+                }
+            });
+        });
+    </script>
+</body>
+
+</html>

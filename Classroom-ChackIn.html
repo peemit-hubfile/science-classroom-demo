@@ -1,0 +1,758 @@
+<!DOCTYPE html>
+
+<html lang="th">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Smart Science Classroom - เช็กชื่อเข้าเรียน</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&amp;display=swap"
+        rel="stylesheet" />
+    <style>
+        * {
+            font-family: 'Prompt', sans-serif;
+        }
+
+        /* School color scheme */
+        :root {
+            --primary: #1e40af;
+            /* Deep blue */
+            --secondary: #be123c;
+            /* Deep red */
+            --accent: #ca8a04;
+            /* Gold */
+            --light: #f8fafc;
+            /* Light background */
+            --dark: #1e293b;
+            /* Dark text */
+        }
+
+        body {
+            background-color: #f1f5f9;
+        }
+
+        /* Button animations */
+        .btn {
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s ease;
+            transform: translateZ(0);
+        }
+
+        .btn:before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.2);
+            transition: all 0.4s ease-in-out;
+            z-index: 1;
+        }
+
+        .btn:hover:before {
+            left: 100%;
+        }
+
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .btn:active {
+            transform: translateY(-1px);
+            box-shadow: 0 5px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .btn-content {
+            position: relative;
+            z-index: 2;
+        }
+
+        /* Card animations */
+        .card {
+            transition: all 0.3s ease;
+            transform: translateZ(0);
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Mobile menu animation */
+        .mobile-menu {
+            transition: transform 0.3s ease-in-out;
+            transform: translateX(-100%);
+        }
+
+        .mobile-menu.open {
+            transform: translateX(0);
+        }
+
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #f1f5f9;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #94a3b8;
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #64748b;
+        }
+
+        /* Scanner animation */
+        .scanner-line {
+            position: absolute;
+            height: 2px;
+            width: 100%;
+            background: #3b82f6;
+            animation: scan 2s linear infinite;
+        }
+
+        @keyframes scan {
+            0% {
+                top: 0;
+                opacity: 0.1;
+            }
+
+            50% {
+                top: 100%;
+                opacity: 0.8;
+            }
+
+            100% {
+                top: 0;
+                opacity: 0.1;
+            }
+        }
+
+        /* Pulse animation for scan button */
+        .pulse {
+            animation: pulse 1.5s infinite;
+        }
+
+        @keyframes pulse {
+            0% {
+                box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.7);
+            }
+
+            70% {
+                box-shadow: 0 0 0 10px rgba(59, 130, 246, 0);
+            }
+
+            100% {
+                box-shadow: 0 0 0 0 rgba(59, 130, 246, 0);
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Mobile Menu (hidden by default) -->
+    <div class="mobile-menu fixed top-0 left-0 h-full w-64 bg-blue-900 z-50 shadow-lg" id="mobileMenu">
+        <div class="p-4">
+            <div class="flex justify-between items-center mb-6">
+                <h2 class="text-white text-xl font-bold">เมนู</h2>
+                <button class="text-white" id="closeMenu">
+                    <svg class="h-6 w-6" fill="none" stroke="currentColor" viewbox="0 0 24 24"
+                        xmlns="http://www.w3.org/2000/svg">
+                        <path d="M6 18L18 6M6 6l12 12" stroke-linecap="round" stroke-linejoin="round" stroke-width="2">
+                        </path>
+                    </svg>
+                </button>
+            </div>
+            <nav>
+                <ul class="space-y-2">
+                    <li>
+                        <a class="block py-2 px-4 text-white hover:bg-blue-800 rounded" href="index.html">หน้าหลัก</a>
+                    </li>
+                    <li>
+                        <a class="block py-2 px-4 text-white bg-blue-800 rounded"
+                            href="Classroom-ChackIn.html">เช็กชื่อเข้าเรียน</a>
+                    </li>
+                    <li>
+                        <a class="block py-2 px-4 text-white hover:bg-blue-800 rounded"
+                            href="Classroom_A1.html">บทเรียนและการทดลอง</a>
+                    </li>
+                    <li>
+                        <a class="block py-2 px-4 text-white hover:bg-blue-800 rounded"
+                            href="Dashboard.html">แดชบอร์ดครู</a>
+                    </li>
+                    <li>
+                        <a class="block py-2 px-4 text-white hover:bg-blue-800 rounded" href="#">เกี่ยวกับเรา</a>
+                    </li>
+                    <li>
+                        <a class="block py-2 px-4 text-white hover:bg-blue-800 rounded" href="#">ติดต่อ</a>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+    </div>
+    <!-- Overlay for mobile menu -->
+    <div class="fixed inset-0 bg-black opacity-50 z-40 hidden" id="overlay"></div>
+    <!-- Main Container -->
+    <div class="min-h-screen flex flex-col">
+        <!-- Header -->
+        <header class="bg-blue-900 text-white shadow-md">
+            <div class="container mx-auto px-4">
+                <div class="flex justify-between items-center py-4">
+                    <!-- Logo and Title -->
+                    <div class="flex items-center">
+                        <button class="mr-4 md:hidden" id="menuButton">
+                            <svg class="h-6 w-6" fill="none" stroke="currentColor" viewbox="0 0 24 24"
+                                xmlns="http://www.w3.org/2000/svg">
+                                <path d="M4 6h16M4 12h16M4 18h16" stroke-linecap="round" stroke-linejoin="round"
+                                    stroke-width="2"></path>
+                            </svg>
+                        </button>
+                        <div class="flex items-center">
+                            <svg class="h-8 w-8 mr-2" fill="currentColor" viewbox="0 0 20 20"
+                                xmlns="http://www.w3.org/2000/svg">
+                                <path
+                                    d="M10.394 2.08a1 1 0 00-.788 0l-7 3a1 1 0 000 1.84L5.25 8.051a.999.999 0 01.356-.257l4-1.714a1 1 0 11.788 1.838L7.667 9.088l1.94.831a1 1 0 00.787 0l7-3a1 1 0 000-1.838l-7-3zM3.31 9.397L5 10.12v4.102a8.969 8.969 0 00-1.05-.174 1 1 0 01-.89-.89 11.115 11.115 0 01.25-3.762zM9.3 16.573A9.026 9.026 0 007 14.935v-3.957l1.818.78a3 3 0 002.364 0l5.508-2.361a11.026 11.026 0 01.25 3.762 1 1 0 01-.89.89 8.968 8.968 0 00-5.35 2.524 1 1 0 01-1.4 0zM6 18a1 1 0 001-1v-2.065a8.935 8.935 0 00-2-.712V17a1 1 0 001 1z">
+                                </path>
+                            </svg>
+                            <div>
+                                <h1 class="text-xl font-bold">Smart Science Classroom</h1>
+                                <p class="text-sm text-blue-200">ห้องเรียนคุณครูสุวรรณา</p>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Desktop Navigation -->
+                    <nav class="hidden md:block">
+                        <ul class="flex space-x-6">
+                            <li>
+                                <a class="text-white font-medium hover:text-blue-200" href="index.html">หน้าหลัก</a>
+                            </li>
+                            <li>
+                                <a class="text-white font-medium border-b-2 border-white pb-1"
+                                    href="Classroom-ChackIn.html">เช็กชื่อเข้าเรียน</a>
+                            </li>
+                            <li>
+                                <a class="text-white font-medium hover:text-blue-200" href="Classroom_A1.html">บทเรียน</a>
+                            </li>
+                            <li>
+                                <a class="text-white font-medium hover:text-blue-200"
+                                    href="Dashboard.html">แดชบอร์ด</a>
+                            </li>
+                        </ul>
+                    </nav>
+                </div>
+            </div>
+        </header>
+        <!-- Main Content -->
+        <main class="flex-grow container mx-auto px-4 py-8">
+            <!-- Page Title -->
+            <div class="mb-8 text-center">
+                <h2 class="text-3xl font-bold text-blue-900">เช็กชื่อเข้าเรียน</h2>
+                <p class="text-gray-600">บันทึกการเข้าเรียนของนักเรียน</p>
+            </div>
+            <!-- View Toggle Buttons (for demo purposes) -->
+            <div class="mb-8 flex justify-center">
+                <div class="bg-white rounded-lg shadow-md p-1 inline-flex">
+                    <button class="btn px-4 py-2 rounded-lg bg-blue-700 text-white font-medium" id="teacherViewBtn">
+                        <span class="btn-content">มุมมองครู</span>
+                    </button>
+                    <button class="btn px-4 py-2 rounded-lg text-gray-700 font-medium" id="studentViewBtn">
+                        <span class="btn-content">มุมมองนักเรียน</span>
+                    </button>
+                </div>
+            </div>
+            <!-- Teacher View -->
+            <div id="teacherView">
+                <!-- Class Info Card -->
+                <div class="card bg-white rounded-lg shadow-md overflow-hidden mb-6">
+                    <div class="bg-blue-700 h-2"></div>
+                    <div class="p-6">
+                        <div class="flex justify-between items-center mb-4">
+                            <h3 class="text-xl font-bold text-blue-900">ข้อมูลคาบเรียน</h3>
+                            <span
+                                class="bg-green-100 text-green-800 text-sm font-medium px-3 py-1 rounded-full">กำลังเช็กชื่อ</span>
+                        </div>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                            <div>
+                                <p class="text-gray-600">ระดับชั้น</p>
+                                <p class="font-semibold">ประถมศึกษาปีที่ 5</p>
+                            </div>
+                            <div>
+                                <p class="text-gray-600">บทเรียน</p>
+                                <p class="font-semibold">ไฟฟ้า: ต่อวงจรให้ไฟติด</p>
+                            </div>
+                            <div>
+                                <p class="text-gray-600">วันที่</p>
+                                <p class="font-semibold">15 มกราคม 2566</p>
+                            </div>
+                            <div>
+                                <p class="text-gray-600">เวลา</p>
+                                <p class="font-semibold">09:30 - 10:30</p>
+                            </div>
+                        </div>
+                        <div class="flex justify-between">
+                            <button class="btn bg-gray-200 hover:bg-gray-300 text-gray-800 font-bold py-2 px-4 rounded">
+                                <span class="btn-content flex items-center">
+                                    <svg class="h-5 w-5 mr-1" fill="currentColor" viewbox="0 0 20 20"
+                                        xmlns="http://www.w3.org/2000/svg">
+                                        <path clip-rule="evenodd"
+                                            d="M9.707 16.707a1 1 0 01-1.414 0l-6-6a1 1 0 010-1.414l6-6a1 1 0 011.414 1.414L5.414 9H17a1 1 0 110 2H5.414l4.293 4.293a1 1 0 010 1.414z"
+                                            fill-rule="evenodd"></path>
+                                    </svg>
+                                    ย้อนกลับ
+                                </span>
+                            </button>
+                            <button class="btn bg-blue-700 hover:bg-blue-800 text-white font-bold py-2 px-4 rounded">
+                                <span class="btn-content flex items-center">
+                                    ไปขั้นตอนถัดไป
+                                    <svg class="h-5 w-5 ml-1" fill="currentColor" viewbox="0 0 20 20"
+                                        xmlns="http://www.w3.org/2000/svg">
+                                        <path clip-rule="evenodd"
+                                            d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z"
+                                            fill-rule="evenodd"></path>
+                                    </svg>
+                                </span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <!-- Attendance Stats -->
+                <div class="card bg-white rounded-lg shadow-md overflow-hidden mb-6">
+                    <div class="bg-blue-700 h-2"></div>
+                    <div class="p-6">
+                        <h3 class="text-xl font-bold text-blue-900 mb-4">สถิติการเข้าเรียน</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                            <div class="bg-blue-50 p-4 rounded-lg text-center">
+                                <div class="text-gray-600 text-sm">นักเรียนทั้งหมด</div>
+                                <div class="text-3xl font-bold text-blue-700">30</div>
+                            </div>
+                            <div class="bg-green-50 p-4 rounded-lg text-center">
+                                <div class="text-gray-600 text-sm">เช็กชื่อแล้ว</div>
+                                <div class="text-3xl font-bold text-green-700">18</div>
+                                <div class="text-xs text-green-600">60%</div>
+                            </div>
+                            <div class="bg-red-50 p-4 rounded-lg text-center">
+                                <div class="text-gray-600 text-sm">ยังไม่เช็กชื่อ</div>
+                                <div class="text-3xl font-bold text-red-700">12</div>
+                                <div class="text-xs text-red-600">40%</div>
+                            </div>
+                        </div>
+                        <!-- QR Code for Class -->
+                        <div class="mb-6 flex flex-col md:flex-row items-center justify-center gap-6">
+                            <div class="text-center">
+                                <h4 class="text-lg font-semibold text-blue-900 mb-2">QR Code สำหรับเช็กชื่อ</h4>
+                                <div class="bg-white p-2 border-2 border-blue-200 rounded-lg inline-block">
+                                    <img alt="QR Code for Check-in" class="w-40 h-40"
+                                        src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&amp;data=SmartScienceClassroom-P5-15012023" />
+                                </div>
+                                <p class="text-sm text-gray-600 mt-2">ให้นักเรียนสแกน QR Code นี้เพื่อเช็กชื่อ</p>
+                            </div>
+                            <div class="text-center md:text-left">
+                                <h4 class="text-lg font-semibold text-blue-900 mb-2">หรือสแกนบัตรนักเรียน</h4>
+                                <div
+                                    class="bg-gray-100 border-2 border-blue-200 rounded-lg p-4 flex items-center justify-center">
+                                    <button
+                                        class="btn bg-blue-700 hover:bg-blue-800 text-white font-bold py-3 px-6 rounded-lg pulse">
+                                        <span class="btn-content flex items-center">
+                                            <svg class="h-6 w-6 mr-2" fill="none" stroke="currentColor"
+                                                viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                                <path
+                                                    d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"
+                                                    stroke-linecap="round" stroke-linejoin="round" stroke-width="2">
+                                                </path>
+                                                <path d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" stroke-linecap="round"
+                                                    stroke-linejoin="round" stroke-width="2"></path>
+                                            </svg>
+                                            เปิดเครื่องสแกน
+                                        </span>
+                                    </button>
+                                </div>
+                                <p class="text-sm text-gray-600 mt-2">ใช้เครื่องสแกนบัตรนักเรียนเพื่อเช็กชื่อ</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Student List -->
+                <div class="card bg-white rounded-lg shadow-md overflow-hidden">
+                    <div class="bg-blue-700 h-2"></div>
+                    <div class="p-6">
+                        <div class="flex justify-between items-center mb-4">
+                            <h3 class="text-xl font-bold text-blue-900">รายชื่อนักเรียน</h3>
+                            <div class="relative">
+                                <input
+                                    class="border border-gray-300 rounded-lg py-2 px-4 pl-10 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                    placeholder="ค้นหานักเรียน..." type="text" />
+                                <svg class="h-5 w-5 text-gray-400 absolute left-3 top-3" fill="none"
+                                    stroke="currentColor" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" stroke-linecap="round"
+                                        stroke-linejoin="round" stroke-width="2"></path>
+                                </svg>
+                            </div>
+                        </div>
+                        <div class="overflow-x-auto">
+                            <table class="min-w-full bg-white">
+                                <thead>
+                                    <tr class="bg-gray-100 text-gray-700">
+                                        <th class="py-3 px-4 text-left">เลขที่</th>
+                                        <th class="py-3 px-4 text-left">ชื่อ-นามสกุล</th>
+                                        <th class="py-3 px-4 text-left">สถานะ</th>
+                                        <th class="py-3 px-4 text-left">เวลาเช็กชื่อ</th>
+                                        <th class="py-3 px-4 text-left">การดำเนินการ</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr class="border-b hover:bg-blue-50">
+                                        <td class="py-3 px-4">1</td>
+                                        <td class="py-3 px-4">เด็กชายธนกร สมบูรณ์</td>
+                                        <td class="py-3 px-4"><span
+                                                class="bg-green-100 text-green-800 text-xs font-medium px-2 py-0.5 rounded">มาเรียน</span>
+                                        </td>
+                                        <td class="py-3 px-4">09:25</td>
+                                        <td class="py-3 px-4">
+                                            <button class="text-blue-600 hover:text-blue-800 mr-2">แก้ไข</button>
+                                            <button class="text-red-600 hover:text-red-800">ยกเลิก</button>
+                                        </td>
+                                    </tr>
+                                    <tr class="border-b hover:bg-blue-50">
+                                        <td class="py-3 px-4">2</td>
+                                        <td class="py-3 px-4">เด็กหญิงนภัสสร วงศ์สุวรรณ</td>
+                                        <td class="py-3 px-4"><span
+                                                class="bg-green-100 text-green-800 text-xs font-medium px-2 py-0.5 rounded">มาเรียน</span>
+                                        </td>
+                                        <td class="py-3 px-4">09:22</td>
+                                        <td class="py-3 px-4">
+                                            <button class="text-blue-600 hover:text-blue-800 mr-2">แก้ไข</button>
+                                            <button class="text-red-600 hover:text-red-800">ยกเลิก</button>
+                                        </td>
+                                    </tr>
+                                    <tr class="border-b hover:bg-blue-50">
+                                        <td class="py-3 px-4">3</td>
+                                        <td class="py-3 px-4">เด็กชายภูมิ รักษ์ธรรม</td>
+                                        <td class="py-3 px-4"><span
+                                                class="bg-red-100 text-red-800 text-xs font-medium px-2 py-0.5 rounded">ยังไม่เช็กชื่อ</span>
+                                        </td>
+                                        <td class="py-3 px-4">-</td>
+                                        <td class="py-3 px-4">
+                                            <button class="text-green-600 hover:text-green-800">เช็กชื่อให้</button>
+                                        </td>
+                                    </tr>
+                                    <tr class="border-b hover:bg-blue-50">
+                                        <td class="py-3 px-4">4</td>
+                                        <td class="py-3 px-4">เด็กหญิงพิมพ์มาดา จันทร์เพ็ญ</td>
+                                        <td class="py-3 px-4"><span
+                                                class="bg-green-100 text-green-800 text-xs font-medium px-2 py-0.5 rounded">มาเรียน</span>
+                                        </td>
+                                        <td class="py-3 px-4">09:28</td>
+                                        <td class="py-3 px-4">
+                                            <button class="text-blue-600 hover:text-blue-800 mr-2">แก้ไข</button>
+                                            <button class="text-red-600 hover:text-red-800">ยกเลิก</button>
+                                        </td>
+                                    </tr>
+                                    <tr class="border-b hover:bg-blue-50">
+                                        <td class="py-3 px-4">5</td>
+                                        <td class="py-3 px-4">เด็กชายกฤษณะ พงษ์ไพบูลย์</td>
+                                        <td class="py-3 px-4"><span
+                                                class="bg-green-100 text-green-800 text-xs font-medium px-2 py-0.5 rounded">มาเรียน</span>
+                                        </td>
+                                        <td class="py-3 px-4">09:20</td>
+                                        <td class="py-3 px-4">
+                                            <button class="text-blue-600 hover:text-blue-800 mr-2">แก้ไข</button>
+                                            <button class="text-red-600 hover:text-red-800">ยกเลิก</button>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <!-- Pagination -->
+                        <div class="mt-4 flex justify-between items-center">
+                            <div class="text-sm text-gray-600">แสดง 1-5 จาก 30 รายการ</div>
+                            <div class="flex space-x-1">
+                                <button class="btn px-3 py-1 bg-gray-200 text-gray-700 rounded">
+                                    <span class="btn-content">ก่อนหน้า</span>
+                                </button>
+                                <button class="btn px-3 py-1 bg-blue-700 text-white rounded">
+                                    <span class="btn-content">1</span>
+                                </button>
+                                <button class="btn px-3 py-1 bg-gray-200 text-gray-700 rounded">
+                                    <span class="btn-content">2</span>
+                                </button>
+                                <button class="btn px-3 py-1 bg-gray-200 text-gray-700 rounded">
+                                    <span class="btn-content">3</span>
+                                </button>
+                                <button class="btn px-3 py-1 bg-gray-200 text-gray-700 rounded">
+                                    <span class="btn-content">ถัดไป</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Student View (hidden by default) -->
+            <div class="hidden" id="studentView">
+                <div class="max-w-md mx-auto">
+                    <!-- Check-in Card -->
+                    <div class="card bg-white rounded-lg shadow-md overflow-hidden mb-6">
+                        <div class="bg-blue-700 h-2"></div>
+                        <div class="p-6">
+                            <h3 class="text-xl font-bold text-blue-900 mb-4 text-center">เช็กชื่อเข้าเรียน</h3>
+                            <!-- Scan Options -->
+                            <div class="mb-6">
+                                <div class="flex justify-center mb-4">
+                                    <div class="bg-white rounded-lg shadow-md p-1 inline-flex">
+                                        <button class="btn px-4 py-2 rounded-lg bg-blue-700 text-white font-medium"
+                                            id="scanQrBtn">
+                                            <span class="btn-content">สแกน QR Code</span>
+                                        </button>
+                                        <button class="btn px-4 py-2 rounded-lg text-gray-700 font-medium"
+                                            id="scanIdBtn">
+                                            <span class="btn-content">สแกนบัตรนักเรียน</span>
+                                        </button>
+                                    </div>
+                                </div>
+                                <!-- QR Scanner -->
+                                <div class="mb-6" id="qrScanner">
+                                    <div class="bg-gray-800 rounded-lg overflow-hidden relative" style="height: 250px;">
+                                        <div class="absolute inset-0 flex items-center justify-center">
+                                            <div class="w-48 h-48 border-2 border-blue-500 rounded-lg relative">
+                                                <div class="scanner-line"></div>
+                                                <div
+                                                    class="absolute top-0 left-0 w-4 h-4 border-t-2 border-l-2 border-blue-500">
+                                                </div>
+                                                <div
+                                                    class="absolute top-0 right-0 w-4 h-4 border-t-2 border-r-2 border-blue-500">
+                                                </div>
+                                                <div
+                                                    class="absolute bottom-0 left-0 w-4 h-4 border-b-2 border-l-2 border-blue-500">
+                                                </div>
+                                                <div
+                                                    class="absolute bottom-0 right-0 w-4 h-4 border-b-2 border-r-2 border-blue-500">
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="absolute inset-0 flex items-center justify-center">
+                                            <p class="text-white text-sm bg-black bg-opacity-50 px-3 py-1 rounded">
+                                                กรุณาวาง QR Code ให้อยู่ในกรอบ</p>
+                                        </div>
+                                    </div>
+                                    <p class="text-sm text-gray-600 text-center">สแกน QR Code ที่ครูแสดงบนหน้าจอ</p>
+                                </div>
+                                <!-- ID Card Scanner (hidden by default) -->
+                                <div class="mb-6 hidden" id="idScanner">
+                                    <div class="bg-gray-100 rounded-lg p-6 text-center">
+                                        <svg class="h-16 w-16 mx-auto mb-4 text-blue-700" fill="none"
+                                            stroke="currentColor" viewbox="0 0 24 24"
+                                            xmlns="http://www.w3.org/2000/svg">
+                                            <path
+                                                d="M10 6H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V8a2 2 0 00-2-2h-5m-4 0V5a2 2 0 114 0v1m-4 0a2 2 0 104 0m-5 8a2 2 0 100-4 2 2 0 000 4zm0 0c1.306 0 2.417.835 2.83 2M9 14a3.001 3.001 0 00-2.83 2M15 11h3m-3 4h2"
+                                                stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+                                        </svg>
+                                        <p class="mb-4">แตะบัตรนักเรียนที่เครื่องอ่านบัตร</p>
+                                        <button
+                                            class="btn bg-blue-700 hover:bg-blue-800 text-white font-bold py-3 px-6 rounded-lg pulse">
+                                            <span class="btn-content flex items-center justify-center">
+                                                <svg class="h-5 w-5 mr-2" fill="none" stroke="currentColor"
+                                                    viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                                    <path
+                                                        d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"
+                                                        stroke-linecap="round" stroke-linejoin="round" stroke-width="2">
+                                                    </path>
+                                                </svg>
+                                                แตะบัตรที่นี่
+                                            </span>
+                                        </button>
+                                    </div>
+                                    <p class="text-sm text-gray-600 text-center">หรือสแกนบัตรนักเรียนที่เครื่องอ่านบัตร
+                                    </p>
+                                </div>
+                            </div>
+                            <!-- Manual Check-in Form -->
+                            <div class="mb-6">
+                                <div class="border-t border-gray-200 pt-4 mb-4">
+                                    <p class="text-center text-gray-600 mb-4">หรือกรอกข้อมูลด้วยตนเอง</p>
+                                </div>
+                                <form>
+                                    <div class="mb-4">
+                                        <label class="block text-gray-700 text-sm font-bold mb-2"
+                                            for="studentNumber">เลขที่</label>
+                                        <input
+                                            class="shadow appearance-none border rounded w-full py-3 px-4 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                            id="studentNumber" placeholder="กรอกเลขที่" type="number" />
+                                    </div>
+                                    <div class="mb-6">
+                                        <label class="block text-gray-700 text-sm font-bold mb-2"
+                                            for="studentName">ชื่อ-นามสกุล</label>
+                                        <input
+                                            class="shadow appearance-none border rounded w-full py-3 px-4 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                            id="studentName" placeholder="กรอกชื่อ-นามสกุล" type="text" />
+                                    </div>
+                                    <button
+                                        class="btn bg-blue-700 hover:bg-blue-800 text-white font-bold py-3 px-8 rounded-lg w-full"
+                                        type="submit">
+                                        <span class="btn-content flex items-center justify-center">
+                                            <svg class="h-5 w-5 mr-2" fill="currentColor" viewbox="0 0 20 20"
+                                                xmlns="http://www.w3.org/2000/svg">
+                                                <path clip-rule="evenodd"
+                                                    d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                                                    fill-rule="evenodd"></path>
+                                            </svg>
+                                            เช็กชื่อ
+                                        </span>
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Success Message (hidden by default) -->
+                    <div class="card bg-white rounded-lg shadow-md overflow-hidden hidden" id="successMessage">
+                        <div class="bg-green-500 h-2"></div>
+                        <div class="p-6 text-center">
+                            <svg class="h-16 w-16 text-green-500 mx-auto mb-4" fill="none" stroke="currentColor"
+                                viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" stroke-linecap="round"
+                                    stroke-linejoin="round" stroke-width="2"></path>
+                            </svg>
+                            <h3 class="text-xl font-bold text-green-800 mb-2">เช็กชื่อสำเร็จ!</h3>
+                            <p class="text-green-700 mb-2">คุณได้เช็กชื่อเข้าเรียนเรียบร้อยแล้ว</p>
+                            <p class="text-green-700 mb-6">กรุณารอครูเริ่มกิจกรรมการเรียน</p>
+                            <div class="bg-green-50 rounded-lg p-4 mb-4">
+                                <div class="flex items-center">
+                                    <div class="mr-4">
+                                        <svg class="h-6 w-6 text-green-500" fill="none" stroke="currentColor"
+                                            viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                            <path d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                                                stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+                                        </svg>
+                                    </div>
+                                    <div>
+                                        <p class="text-sm text-gray-700">ข้อมูลการเช็กชื่อ</p>
+                                        <p class="text-sm font-medium">เด็กชายธนกร สมบูรณ์ | เลขที่ 1 | เวลา 09:25 น.
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                            <button class="btn bg-blue-700 hover:bg-blue-800 text-white font-bold py-2 px-6 rounded-lg">
+                                <span class="btn-content">กลับสู่หน้าหลัก</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+        <!-- Footer -->
+        <footer class="bg-blue-900 text-white py-6 mt-10">
+            <div class="container mx-auto px-4">
+                <div class="flex flex-col md:flex-row justify-between items-center">
+                    <div class="mb-4 md:mb-0">
+                        <h3 class="text-lg font-bold mb-2">Smart Science Classroom</h3>
+                        <p class="text-sm text-blue-200">ห้องเรียนคุณครูสุวรรณา</p>
+                    </div>
+                    <div class="text-center md:text-right">
+                        <p class="text-sm mb-2">© 2023 กระทรวงศึกษาธิการ</p>
+                        <p class="text-xs text-blue-200">พัฒนาโดย ทีมพัฒนาเทคโนโลยีการศึกษา</p>
+                    </div>
+                </div>
+            </div>
+        </footer>
+    </div>
+    <script>
+        // Mobile menu functionality
+        document.addEventListener('DOMContentLoaded', function () {
+            const menuButton = document.getElementById('menuButton');
+            const closeMenu = document.getElementById('closeMenu');
+            const mobileMenu = document.getElementById('mobileMenu');
+            const overlay = document.getElementById('overlay');
+
+            // Open menu
+            menuButton.addEventListener('click', function () {
+                mobileMenu.classList.add('open');
+                overlay.classList.remove('hidden');
+            });
+
+            // Close menu
+            closeMenu.addEventListener('click', function () {
+                mobileMenu.classList.remove('open');
+                overlay.classList.add('hidden');
+            });
+
+            // Close menu when clicking overlay
+            overlay.addEventListener('click', function () {
+                mobileMenu.classList.remove('open');
+                overlay.classList.add('hidden');
+            });
+
+            // Button animations
+            const buttons = document.querySelectorAll('.btn');
+            buttons.forEach(button => {
+                button.addEventListener('mouseenter', function () {
+                    this.classList.add('animate-pulse');
+                });
+                button.addEventListener('mouseleave', function () {
+                    this.classList.remove('animate-pulse');
+                });
+                button.addEventListener('click', function () {
+                    this.classList.add('scale-95');
+                    setTimeout(() => {
+                        this.classList.remove('scale-95');
+                    }, 100);
+                });
+            });
+
+            // View toggle
+            const teacherViewBtn = document.getElementById('teacherViewBtn');
+            const studentViewBtn = document.getElementById('studentViewBtn');
+            const teacherView = document.getElementById('teacherView');
+            const studentView = document.getElementById('studentView');
+
+            teacherViewBtn.addEventListener('click', function () {
+                teacherView.classList.remove('hidden');
+                studentView.classList.add('hidden');
+                teacherViewBtn.classList.add('bg-blue-700', 'text-white');
+                teacherViewBtn.classList.remove('text-gray-700');
+                studentViewBtn.classList.remove('bg-blue-700', 'text-white');
+                studentViewBtn.classList.add('text-gray-700');
+            });
+
+            studentViewBtn.addEventListener('click', function () {
+                teacherView.classList.add('hidden');
+                studentView.classList.remove('hidden');
+                teacherViewBtn.classList.remove('bg-blue-700', 'text-white');
+                teacherViewBtn.classList.add('text-gray-700');
+                studentViewBtn.classList.add('bg-blue-700', 'text-white');
+                studentViewBtn.classList.remove('text-gray-700');
+            });
+
+            // Student view scanner toggle
+            const scanQrBtn = document.getElementById('scanQrBtn');
+            const scanIdBtn = document.getElementById('scanIdBtn');
+            const qrScanner = document.getElementById('qrScanner');
+            const idScanner = document.getElementById('idScanner');
+
+            scanQrBtn.addEventListener('click', function () {
+                qrScanner.classList.remove('hidden');
+                idScanner.classList.add('hidden');
+                scanQrBtn.classList.add('bg-blue-700', 'text-white');
+                scanQrBtn.classList.remove('text-gray-700');
+                scanIdBtn.classList.remove('bg-blue-700', 'text-white');
+                scanIdBtn.classList.add('text-gray-700');
+            });
+
+            scanIdBtn.addEventListener('click', function () {
+                qrScanner.classList.add('hidden');
+                idScanner.classList.remove('hidden');
+                scanQrBtn.classList.remove('bg-blue-700', 'text-white');
+                scanQrBtn.classList.add('text-gray-700');
+                scanIdBtn.classList.add('bg-blue-700', 'text-white');
+                scanIdBtn.classList.remove('text-gray-700');
+            });
+        });
+    </script>
+</body>
+
+</html>
